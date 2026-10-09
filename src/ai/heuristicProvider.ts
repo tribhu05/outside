@@ -98,7 +98,7 @@ export class HeuristicProvider implements IntentExtractor {
 
   private parseEnergy(text: string): EnergyLevel {
     // Low energy indicators
-    if (/\b(?:tired|exhausted|drained|sleepy|lazy|low\s*energy|fatigued|burnt\s*out|burnout|unwind|chill)\b/i.test(text)) {
+    if (/\b(?:tired|exhausted|drained|sleepy|lazy|low\s*energy|fatigued|burnt\s*out|burnout|unwind|chill|relax(?:ing|ed)?|gentle|peaceful)\b/i.test(text)) {
       return 'low';
     }
     // High energy indicators

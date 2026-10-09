@@ -74,6 +74,8 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
           </div>
           <button
             onClick={onClose}
+            aria-label="Close history log"
+            title="Close history log"
             className="p-1.5 rounded-lg text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
           >
             <X className="w-5 h-5" />

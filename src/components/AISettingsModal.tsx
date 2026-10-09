@@ -57,6 +57,7 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({
           </div>
           <button
             onClick={onClose}
+            aria-label="Close AI settings"
             className="p-1.5 rounded-lg text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -147,7 +148,7 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({
                 </button>
 
                 {healthStatus && (
-                  <div className="flex items-center gap-1.5 text-xs">
+                  <div data-testid="connection-status" className="flex items-center gap-1.5 text-xs">
                     {healthStatus.isOnline ? (
                       <span className="text-emerald-700 dark:text-emerald-400 flex items-center gap-1 font-medium">
                         <CheckCircle2 className="w-4 h-4" />
