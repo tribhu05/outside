@@ -3,6 +3,8 @@
 > **Turn free time into time outside.**  
 > Built for the DEV Hacktoberfest 2026 Week 1 Challenge: **“Touch Grass.”**
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/tribhu05/outside)
+
 ---
 
 ## Why?
