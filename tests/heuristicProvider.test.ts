@@ -63,6 +63,14 @@ describe('HeuristicProvider', () => {
       const res = await provider.extractIntent('Walk to a cafe to grab a coffee');
       expect(res.budget).toBe('low-cost');
     });
+
+    it('detects explicit currency amounts as low-cost (₹100, $5, €10)', async () => {
+      const resRupee = await provider.extractIntent('Suggest something peaceful outdoors for ₹100.');
+      expect(resRupee.budget).toBe('low-cost');
+
+      const resDollar = await provider.extractIntent('Got $5 for a quick snack outside');
+      expect(resDollar.budget).toBe('low-cost');
+    });
   });
 
   describe('Energy and Mood parsing', () => {
@@ -71,6 +79,12 @@ describe('HeuristicProvider', () => {
       expect(res.energyLevel).toBe('low');
       expect(res.mood).toBe('tired');
       expect(res.budget).toBe('free');
+    });
+
+    it('detects low energy after class in 30 minutes', async () => {
+      const res = await provider.extractIntent('I have 30 minutes free after class and low energy.');
+      expect(res.durationMinutes).toBe(30);
+      expect(res.energyLevel).toBe('low');
     });
 
     it('detects stress and need to clear head', async () => {
@@ -83,6 +97,23 @@ describe('HeuristicProvider', () => {
       const res = await provider.extractIntent('I want something active and high energy this evening.');
       expect(res.energyLevel).toBe('high');
       expect(res.timeOfDay).toBe('evening');
+    });
+  });
+
+  describe('Mobility and Digital Detox parsing', () => {
+    it('detects digital detox requests ("without my phone")', async () => {
+      const res = await provider.extractIntent('I feel stressed and want a short walk without my phone.');
+      expect(res.digitalDetox).toBe(true);
+      expect(res.mood).toBe('stressed');
+      expect(res.activityPreference).toBe('walking');
+    });
+
+    it('detects step-free and mobility constraints', async () => {
+      const resStepFree = await provider.extractIntent('Need a step-free route with benches');
+      expect(resStepFree.mobilityPreference).toBe('step-free');
+
+      const resWheelchair = await provider.extractIntent('wheelchair friendly outdoor time');
+      expect(resWheelchair.mobilityPreference).toBe('step-free');
     });
   });
 

@@ -30,9 +30,7 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({
   const handleTestConnection = async () => {
     setIsTesting(true);
     setHealthStatus(null);
-    // Apply temporary values for testing
-    aiService.updateConfig({ endpoint, model });
-    const health = await aiService.testGemmaHealth();
+    const health = await aiService.testGemmaHealth({ endpoint, model });
     setHealthStatus(health);
     setIsTesting(false);
   };
@@ -148,17 +146,24 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({
                 </button>
 
                 {healthStatus && (
-                  <div data-testid="connection-status" className="flex items-center gap-1.5 text-xs">
+                  <div data-testid="connection-status" className="flex items-start gap-1.5 text-xs">
                     {healthStatus.isOnline ? (
-                      <span className="text-emerald-700 dark:text-emerald-400 flex items-center gap-1 font-medium">
-                        <CheckCircle2 className="w-4 h-4" />
-                        Connected ({healthStatus.latencyMs}ms)
+                      <span className="text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 font-medium">
+                        <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                        <span>Connected ({healthStatus.latencyMs}ms) — {healthStatus.model} verified</span>
                       </span>
                     ) : (
-                      <span className="text-amber-700 dark:text-amber-400 flex items-center gap-1 font-medium">
-                        <AlertCircle className="w-4 h-4" />
-                        Offline (Falling back to local heuristic)
-                      </span>
+                      <div className="flex flex-col gap-1 text-left">
+                        <span className="text-amber-700 dark:text-amber-400 flex items-center gap-1 font-medium">
+                          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                          <span>Offline (Falling back to local heuristic)</span>
+                        </span>
+                        {healthStatus.errorMessage && (
+                          <span className="text-[11px] text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2 py-1 rounded border border-amber-200 dark:border-amber-900/60 font-mono">
+                            {healthStatus.errorMessage}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
                 )}

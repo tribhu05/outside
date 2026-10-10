@@ -57,7 +57,8 @@ async function runE2ETests() {
     // Phase 2, Test A: Application Loading
     // ==========================================
     console.log('\n--- Test A: Application Loading ---');
-    await page.goto(BASE_URL, { waitUntil: 'networkidle0', timeout: 10000 });
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await sleep(1000);
 
     const title = await page.title();
     recordTest('Page Title', title.includes('Outside'), `Title: "${title}"`);
@@ -98,25 +99,35 @@ async function runE2ETests() {
     recordTest('All quick suggestions populate input', allExamplesWorked);
 
     // 2. Test Empty input submission
-    await page.$eval('textarea', el => el.value = '');
+    await page.click('textarea');
+    await page.keyboard.down('Control');
+    await page.keyboard.press('KeyA');
+    await page.keyboard.up('Control');
+    await page.keyboard.press('Backspace');
     await page.type('textarea', '   ');
+    await sleep(200);
     const submitBtnDisabled = await page.$eval('button[type="submit"]', el => el.disabled);
     recordTest('Empty prompt submission disabled', submitBtnDisabled);
 
     // 3. Test Exact Test Prompt:
     const exactPrompt = "I have 90 minutes free this evening. I don't want to spend money and I want something relaxing.";
-    await page.$eval('textarea', el => el.value = '');
+    await page.click('textarea');
+    await page.keyboard.down('Control');
+    await page.keyboard.press('KeyA');
+    await page.keyboard.up('Control');
+    await page.keyboard.press('Backspace');
     await page.type('textarea', exactPrompt);
+    await sleep(200);
 
     const submitBtn = await page.$('button[type="submit"]');
     await submitBtn.click();
     console.log('Submitted test prompt, waiting for plan generation...');
 
     // Wait for Plan View to appear
-    await page.waitForSelector('h1', { timeout: 8000 });
-    await sleep(600); // UI transition
+    await page.waitForSelector('[data-testid="plan-view"]', { timeout: 35000 });
+    await sleep(500);
 
-    const planHeader = await page.$eval('h1', el => el.innerText).catch(() => '');
+    const planHeader = await page.$eval('[data-testid="plan-title"]', el => el.innerText).catch(() => '');
     recordTest('Plan generated with title', planHeader.length > 5, `Plan Title: "${planHeader}"`);
 
     // Verify 90 minutes duration badge
@@ -159,12 +170,17 @@ async function runE2ETests() {
     const prepItems = await page.$$eval('ul.space-y-1\\.5 li', lis => lis.map(li => li.innerText));
     recordTest('Preparation tips present', prepItems.length >= 2, `Tips: ${prepItems.length}`);
 
+    // Check Items to bring card & Safety Guidance
+    const planBodyText = await page.$eval('[data-testid="plan-view"]', el => el.innerText).catch(() => '');
+    recordTest('Suggested to Bring section rendered', planBodyText.toUpperCase().includes('SUGGESTED TO BRING'));
+    recordTest('Safety Guidance card rendered', planBodyText.toUpperCase().includes('SAFETY GUIDANCE'));
+
     // Check Suitable Alternatives section
     const altSectionText = await page.$$eval('h3', headings => headings.map(h => h.innerText).join(' '));
     recordTest('Suitable Alternatives section present', altSectionText.toUpperCase().includes('SUITABLE ALTERNATIVES'));
 
     // Test 1-click alternative plan switch
-    const initialTitle = await page.$eval('h1', el => el.innerText);
+    const initialTitle = await page.$eval('[data-testid="plan-title"]', el => el.innerText);
     const switched = await page.$$eval('button', btns => {
       const b = btns.find(btn => btn.innerText.trim() === 'Switch');
       if (b) { b.click(); return true; }
@@ -172,10 +188,43 @@ async function runE2ETests() {
     });
     if (switched) {
       await sleep(400);
-      const switchedTitle = await page.$eval('h1', el => el.innerText);
+      const switchedTitle = await page.$eval('[data-testid="plan-title"]', el => el.innerText);
       recordTest('1-click switch to alternative plan', switchedTitle !== initialTitle, `Switched to "${switchedTitle}"`);
     } else {
       recordTest('Alternative switch button found', false);
+    }
+
+    // Test "Plans changed?" modal and adaptation
+    const plansChangedBtn = await page.$$eval('button', btns => {
+      const b = btns.find(btn => btn.innerText.includes('Plans changed?'));
+      if (b) { b.click(); return true; }
+      return false;
+    });
+    recordTest('"Plans changed?" button found and clickable', !!plansChangedBtn);
+
+    if (plansChangedBtn) {
+      await sleep(300);
+      // Verify modal is open
+      const modalTitles = await page.$$eval('h2', els => els.map(e => e.innerText));
+      recordTest('Plans Changed modal opened', modalTitles.some(t => t.includes('Plans Changed')));
+
+      // Click 15 min button
+      await page.$$eval('button', btns => {
+        const b = btns.find(btn => btn.innerText.trim() === '15 min');
+        if (b) b.click();
+      });
+      await sleep(100);
+
+      // Click Adapt Mission button
+      await page.$$eval('button', btns => {
+        const b = btns.find(btn => btn.innerText.includes('Adapt Mission'));
+        if (b) b.click();
+      });
+      await sleep(400);
+
+      // Verify plan adapted to 15 mins
+      const adaptedBadge = await page.$$eval('span', spans => spans.map(s => s.innerText).join(' '));
+      recordTest('Plan adapted dynamically to 15 min', adaptedBadge.includes('15 min total'));
     }
 
     // ==========================================
@@ -276,6 +325,21 @@ async function runE2ETests() {
     }
     recordTest('Entered reflection note', !!reflectionTextarea);
 
+    // Test Outing completion selector
+    const outingBtnFound = await page.$$eval('button', btns => {
+      const b = btns.find(btn => btn.innerText.includes('Yes') || btn.innerText.includes('Partial'));
+      return !!b;
+    });
+    recordTest('Outing completion toggle present in modal', outingBtnFound);
+
+    // Test Next-time preference selector
+    const nextPrefBtn = await page.$$eval('button', btns => {
+      const b = btns.find(btn => btn.innerText.toLowerCase().includes('similar pace') || btn.innerText.toLowerCase().includes('surprise'));
+      if (b) { b.click(); return true; }
+      return false;
+    });
+    recordTest('Next-time preference selectable in modal', nextPrefBtn);
+
     // Save to log
     const saveLogBtn = await page.$eval('button', () => {
       const btns = Array.from(document.querySelectorAll('button'));
@@ -301,7 +365,7 @@ async function runE2ETests() {
       await historyBtn.click();
       await sleep(400);
     }
-    const historyModal = await page.$eval('h2', el => el.innerText).catch(() => '');
+    const historyModal = await page.$eval('.fixed h2', el => el.innerText).catch(() => '');
     recordTest('Outside Log modal opened', historyModal.includes('Outside Log'), `Heading: "${historyModal}"`);
 
     // Verify stats
@@ -315,6 +379,12 @@ async function runE2ETests() {
     recordTest('Session entry recorded in list', logEntries.length >= 1, `Found ${logEntries.length} entries`);
     const entryHasReflection = logEntries.some(e => e.includes('autumn trees') || e.includes('decompressed'));
     recordTest('Reflection note saved in entry', entryHasReflection);
+
+    const entryHasOutingBadge = logEntries.some(e => e.includes('Full outing') || e.includes('Partial outing'));
+    recordTest('Outing completion badge rendered in history', entryHasOutingBadge);
+
+    const entryHasNextTag = logEntries.some(e => e.includes('Next: Similar pace') || e.includes('Next:'));
+    recordTest('Next-time preference tag rendered in history', entryHasNextTag);
 
     // Test REFRESH PERSISTENCE
     console.log('Testing page reload persistence...');
@@ -373,7 +443,7 @@ async function runE2ETests() {
         return false;
       });
       recordTest('Test Connection button clicked', testConnBtn);
-      await sleep(1500);
+      await page.waitForSelector('[data-testid="connection-status"]', { timeout: 8000 }).catch(() => {});
 
       // Verify connection feedback is rendered (offline fallback or connected)
       const healthStatus = await page.$eval('[data-testid="connection-status"]', el => el.innerText).catch(() => '');

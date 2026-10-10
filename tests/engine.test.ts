@@ -130,5 +130,61 @@ describe('Outdoor Activity Engine', () => {
       expect(ranked.length).toBeGreaterThan(0);
       expect(ranked[0].score).toBeGreaterThanOrEqual(ranked[ranked.length - 1].score);
     });
+
+    it('attaches itemsToBring, safetyNote, and indoorShelteredAlternative to the generated plan', () => {
+      const plan = generateOutdoorPlan(baseIntent);
+      expect(plan.itemsToBring).toBeDefined();
+      expect(Array.isArray(plan.itemsToBring)).toBe(true);
+      expect(plan.safetyNote).toBeDefined();
+      expect(typeof plan.safetyNote).toBe('string');
+      expect(plan.indoorShelteredAlternative).toBeDefined();
+      expect(typeof plan.indoorShelteredAlternative).toBe('string');
+    });
+
+    it('enriches micro-challenge with suggestedDuration, completionAction, and reflectionPrompt', () => {
+      const plan = generateOutdoorPlan(baseIntent);
+      expect(plan.challenge).toBeDefined();
+      expect(plan.challenge?.suggestedDurationMinutes).toBeGreaterThan(0);
+      expect(plan.challenge?.completionAction).toBeDefined();
+      expect(plan.challenge?.reflectionPrompt).toBeDefined();
+    });
+
+    it('prioritizes step-free and sheltered activities when mobility or shelter requested', () => {
+      const mobilityIntent: UserIntent = {
+        ...baseIntent,
+        mobilityPreference: 'step-free'
+      };
+      const activity = selectBestActivity(mobilityIntent);
+      expect(activity.mobilityFriendly).toBe(true);
+    });
+
+    it('adapts plan dynamically when user intent is adjusted (Plans changed flow)', () => {
+      const initialIntent: UserIntent = {
+        ...baseIntent,
+        durationMinutes: 60,
+        energyLevel: 'moderate'
+      };
+      const initialPlan = generateOutdoorPlan(initialIntent);
+      expect(initialPlan.totalDurationMinutes).toBe(60);
+
+      // User adjusts: sudden rain, only 15 minutes left, exhausted, step-free
+      const adjustedIntent: UserIntent = {
+        ...initialPlan.extractedIntent,
+        durationMinutes: 15,
+        energyLevel: 'low',
+        weatherCondition: 'rainy',
+        mobilityPreference: 'step-free'
+      };
+      const adaptedPlan = generateOutdoorPlan(adjustedIntent, initialPlan.providerUsed);
+      expect(adaptedPlan.totalDurationMinutes).toBe(15);
+      expect(adaptedPlan.energyLevel).toBe('low');
+      expect(adaptedPlan.extractedIntent.durationMinutes).toBe(15);
+      expect(adaptedPlan.extractedIntent.mobilityPreference).toBe('step-free');
+      expect(adaptedPlan.indoorShelteredAlternative).toBeDefined();
+
+      const selectedActivity = selectBestActivity(adjustedIntent);
+      expect(selectedActivity.suitableEnergyLevels).toContain('low');
+      expect(selectedActivity.mobilityFriendly).toBe(true);
+    });
   });
 });

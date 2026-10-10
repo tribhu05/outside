@@ -7,18 +7,18 @@ import { ReflectionModal } from './components/ReflectionModal';
 import { HistoryView } from './components/HistoryView';
 import { AISettingsModal } from './components/AISettingsModal';
 
-import { OutdoorPlan, LocationTypePreference, CompletedSession } from './types';
+import { OutdoorPlan, LocationTypePreference, CompletedSession, UserIntent } from './types';
 import { aiService } from './ai/aiService';
 import { generateOutdoorPlan } from './planner/engine';
 import { getRecommendedChallenge } from './planner/challenges';
-import { getSessions, saveSession, deleteSession, seedSampleSessions } from './services/storage';
+import { getSessions, saveSession, deleteSession, seedSampleSessions, clearSessions } from './services/storage';
 
 export const App: React.FC = () => {
   const [activeView, setActiveView] = useState<'input' | 'plan' | 'screen-exit'>('input');
   const [currentPlan, setCurrentPlan] = useState<OutdoorPlan | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeProvider, setActiveProvider] = useState<'gemma' | 'heuristic'>(
-    aiService.getPreferHeuristic() ? 'heuristic' : 'heuristic'
+    aiService.getPreferHeuristic() ? 'heuristic' : 'gemma'
   );
 
   // Modals & sub-flows
@@ -54,7 +54,11 @@ export const App: React.FC = () => {
     }
   }, [darkMode]);
 
-  const handleGenerate = async (prompt: string, locationPref?: LocationTypePreference) => {
+  const handleGenerate = async (
+    prompt: string, 
+    locationPref?: LocationTypePreference,
+    mobilityPref?: 'step-free' | 'seated' | 'any'
+  ) => {
     setIsLoading(true);
     try {
       const extraction = await aiService.extractIntent(prompt);
@@ -62,6 +66,9 @@ export const App: React.FC = () => {
       // If user selected explicit location chip, apply it
       if (locationPref && locationPref !== 'any') {
         extraction.intent.locationPreference = locationPref;
+      }
+      if (mobilityPref && mobilityPref !== 'any') {
+        extraction.intent.mobilityPreference = mobilityPref;
       }
 
       const plan = generateOutdoorPlan(extraction.intent, extraction.providerUsed);
@@ -95,6 +102,13 @@ export const App: React.FC = () => {
     setCurrentPlan(newPlan);
   };
 
+  const handleAdjustPlan = (adjustments: Partial<UserIntent>) => {
+    if (!currentPlan) return;
+    const updatedIntent: UserIntent = { ...currentPlan.extractedIntent, ...adjustments };
+    const newPlan = generateOutdoorPlan(updatedIntent, currentPlan.providerUsed, new Date());
+    setCurrentPlan(newPlan);
+  };
+
   const handleStartSession = () => {
     setActiveView('screen-exit');
   };
@@ -124,8 +138,8 @@ export const App: React.FC = () => {
 
   const handleClearAllSessions = () => {
     if (window.confirm('Are you sure you want to clear your outdoor log?')) {
-      localStorage.removeItem('outside_completed_sessions_v1');
-      setSessions([]);
+      const cleared = clearSessions();
+      setSessions(cleared);
     }
   };
 
@@ -164,6 +178,7 @@ export const App: React.FC = () => {
             onBackToInput={() => setActiveView('input')}
             onShuffleChallenge={handleShuffleChallenge}
             onSelectAlternative={handleSelectAlternative}
+            onAdjustPlan={handleAdjustPlan}
           />
         )}
 

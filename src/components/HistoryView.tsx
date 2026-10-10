@@ -188,6 +188,23 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                     “{session.reflectionNote}”
                   </p>
                 )}
+
+                {/* Completion & Next time preference tags */}
+                <div className="flex flex-wrap items-center gap-1.5 mt-2.5 pt-2 border-t border-stone-200/60 dark:border-stone-800/60">
+                  <span className={`inline-flex items-center text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                    session.fullOutingCompleted === false
+                      ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+                      : 'bg-nature-100 text-nature-800 dark:bg-nature-950/60 dark:text-nature-300'
+                  }`}>
+                    {session.fullOutingCompleted === false ? 'Partial outing' : 'Full outing'}
+                  </span>
+
+                  {session.nextTimePreference && (
+                    <span className="inline-flex items-center text-[10px] text-stone-600 dark:text-stone-300 bg-stone-100 dark:bg-stone-800 px-2 py-0.5 rounded-full">
+                      Next: {session.nextTimePreference === 'similar' ? 'Similar pace' : session.nextTimePreference === 'different' ? 'Different' : 'Surprise me'}
+                    </span>
+                  )}
+                </div>
               </div>
             ))
           )}

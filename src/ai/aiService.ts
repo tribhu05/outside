@@ -71,34 +71,18 @@ class AIService {
     };
   }
 
-  async testGemmaHealth(): Promise<ConnectionHealth> {
-    const start = performance.now();
-    const endpoint = this.gemmaProvider.getEndpoint();
-    const model = this.gemmaProvider.getModel();
-
-    try {
-      // Test quick inference with tiny prompt
-      const result = await this.gemmaProvider.extractIntent('30 minutes walking');
-      const latency = Math.round(performance.now() - start);
-      if (result && result.durationMinutes > 0) {
-        return {
-          isOnline: true,
-          endpoint,
-          model,
-          latencyMs: latency
-        };
-      }
-      throw new Error('Unexpected response format');
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      return {
-        isOnline: false,
-        endpoint,
-        model,
-        latencyMs: Math.round(performance.now() - start),
-        errorMessage: msg
-      };
+  async testGemmaHealth(configOverride?: GemmaConfig): Promise<ConnectionHealth> {
+    if (configOverride) {
+      this.updateConfig(configOverride);
     }
+    const res = await this.gemmaProvider.checkHealth();
+    return {
+      isOnline: res.isOnline,
+      endpoint: res.endpoint,
+      model: res.model,
+      latencyMs: res.latencyMs,
+      errorMessage: res.errorMessage
+    };
   }
 
   async extractIntent(

@@ -63,7 +63,16 @@ flowchart TD
 - Core grounding message: *"Put your phone away when you're ready. The real world doesn't live on this screen."*
 - Web Audio API singing bowl chimes for peaceful milestone transitions without downloading external audio files.
 
-### 4. Local Reflection & Storage (`src/services/storage.ts`)
+### 4. Real-World Adaptation ("Plans Changed?", Phase 6)
+- **`PlansChangedModal.tsx`**: When external conditions shift (sudden rain, reduced time window, physical fatigue, mobility requirement), users can adjust their mission on the fly.
+- Dynamically updates the active `UserIntent` (adjusting duration to 15–60m, swapping outdoor trails for covered porch/canopy observations, filtering for step-free routes, or toggling solo vs. social) and regenerates the clock-accurate plan instantly.
+
+### 5. Local Reflection & Storage (`src/services/storage.ts`)
 - Preserves user history entirely on-device via `localStorage`.
 - Tracks wellbeing delta: mood before vs. mood after, actual outdoor minutes, and challenge completion rate.
 - Provides one-click JSON export.
+
+### 6. Local Inference Reliability & Diagnostics
+- **Local LLM Latency Reality**: On consumer hardware, local models like `gemma2:2b` take ~1.2s to 10s depending on GPU/CPU offloading. A 30s timeout prevents false-negative aborts.
+- **Genuine Minimal Health Check**: The Test Connection feature performs a live 5-token ping (`messages: [{ role: 'user', content: 'Respond with OK.' }], max_tokens: 5`) to confirm that the model is loaded in memory and measures real roundtrip latency (e.g. `Connected (1253ms) — gemma2:2b verified`).
+- **Network & CORS Resilience**: Supports direct access to `http://localhost:11434/v1/chat/completions` as well as Vite reverse proxy routing (`/api/ollama`) for restricted browser sandbox environments.

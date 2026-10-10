@@ -1,6 +1,83 @@
-import { CompletedSession } from '../types';
+import { CompletedSession, AfterMood } from '../types';
 
 const STORAGE_KEY = 'outside_completed_sessions_v1';
+
+export function sanitizeSession(raw: unknown): CompletedSession | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const s = raw as Record<string, unknown>;
+
+  if (typeof s.id !== 'string' || !s.id.trim()) return null;
+  if (typeof s.planTitle !== 'string' || !s.planTitle.trim()) return null;
+
+  const plannedDurationMinutes =
+    typeof s.plannedDurationMinutes === 'number' && !isNaN(s.plannedDurationMinutes) && s.plannedDurationMinutes > 0
+      ? s.plannedDurationMinutes
+      : 30;
+
+  const actualDurationMinutes =
+    typeof s.actualDurationMinutes === 'number' && !isNaN(s.actualDurationMinutes) && s.actualDurationMinutes >= 0
+      ? s.actualDurationMinutes
+      : plannedDurationMinutes;
+
+  const completedAt =
+    typeof s.completedAt === 'string' && !isNaN(Date.parse(s.completedAt))
+      ? s.completedAt
+      : new Date().toISOString();
+
+  const primaryActivity =
+    typeof s.primaryActivity === 'string' && s.primaryActivity.trim()
+      ? s.primaryActivity
+      : s.planTitle;
+
+  const moodBefore =
+    typeof s.moodBefore === 'string' && s.moodBefore.trim()
+      ? s.moodBefore
+      : 'neutral';
+
+  const validAfterMoods: AfterMood[] = ['better', 'relaxed', 'energized', 'okay', 'still-tired'];
+  const moodAfter: AfterMood =
+    typeof s.moodAfter === 'string' && validAfterMoods.includes(s.moodAfter as AfterMood)
+      ? (s.moodAfter as AfterMood)
+      : 'better';
+
+  const reflectionNote =
+    typeof s.reflectionNote === 'string' && s.reflectionNote.trim()
+      ? s.reflectionNote.trim()
+      : undefined;
+
+  const challengeCompleted =
+    typeof s.challengeCompleted === 'boolean' ? s.challengeCompleted : undefined;
+
+  const challengeTitle =
+    typeof s.challengeTitle === 'string' && s.challengeTitle.trim()
+      ? s.challengeTitle.trim()
+      : undefined;
+
+  const fullOutingCompleted =
+    typeof s.fullOutingCompleted === 'boolean' ? s.fullOutingCompleted : true;
+
+  const validNextPrefs = ['similar', 'different', 'any'] as const;
+  const nextTimePreference =
+    typeof s.nextTimePreference === 'string' && validNextPrefs.includes(s.nextTimePreference as any)
+      ? (s.nextTimePreference as 'similar' | 'different' | 'any')
+      : undefined;
+
+  return {
+    id: s.id,
+    completedAt,
+    plannedDurationMinutes,
+    actualDurationMinutes,
+    planTitle: s.planTitle,
+    primaryActivity,
+    moodBefore,
+    moodAfter,
+    reflectionNote,
+    challengeCompleted,
+    challengeTitle,
+    fullOutingCompleted,
+    nextTimePreference
+  };
+}
 
 export function getSessions(): CompletedSession[] {
   if (typeof window === 'undefined') return [];
@@ -8,7 +85,10 @@ export function getSessions(): CompletedSession[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map(item => sanitizeSession(item))
+      .filter((s): s is CompletedSession => s !== null);
   } catch (e) {
     console.error('Failed to parse completed sessions:', e);
     return [];
@@ -17,7 +97,9 @@ export function getSessions(): CompletedSession[] {
 
 export function saveSession(session: CompletedSession): CompletedSession[] {
   const current = getSessions();
-  const updated = [session, ...current];
+  const sanitized = sanitizeSession(session);
+  if (!sanitized) return current;
+  const updated = [sanitized, ...current];
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   } catch (e) {
@@ -35,6 +117,17 @@ export function deleteSession(id: string): CompletedSession[] {
     console.error('Failed to delete session:', e);
   }
   return updated;
+}
+
+export function clearSessions(): CompletedSession[] {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {
+      console.error('Failed to clear sessions:', e);
+    }
+  }
+  return [];
 }
 
 export function getOutdoorStats(sessions: CompletedSession[]) {

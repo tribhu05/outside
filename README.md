@@ -29,14 +29,27 @@ An open-weight model—**Google Gemma**—interprets your natural language, ener
 
 ## Key Features
 
-1. **Natural-Language Intent Input**: Speak or type naturally about your free time, emotional state, or companions (*“I have 45 minutes and need to clear my head”* or *“Plan something active with two friends”*).
-2. **Deterministic Outdoor Plan Generator**: Calculates a timeline with real-world clock times (e.g., *6:00 PM — Leave home*, *6:05 PM — 25-minute relaxed walk*, *6:30 PM — Park bench reflection*, *6:45 PM — 5-senses observation*, *7:10 PM — Stroll back*).
-3. **“Challenge Me” Sensory Micro-Challenges**: Optional activities designed to stimulate sensory awareness and break digital habits (e.g. *5-Senses Grounding*, *Canopy & Cloud Gaze*, *Three Leaf Architectures*, *Digital Detox Pocket*).
+1. **Natural-Language Intent Input**: Speak or type naturally about your free time, emotional state, budget, or companions:
+   - *“I have 30 minutes free after class and low energy.”*
+   - *“Suggest something peaceful outdoors for ₹100.”*
+   - *“I feel stressed and want a short walk without my phone.”*
+   - *“Give me something fun to do with a friend this evening.”*
+   - *“I have 90 minutes free this evening. I don't want to spend money and I want something relaxing.”*
+2. **Deterministic Outdoor Plan Generator**: Calculates a realistic timeline with real-world clock times (e.g., *6:00 PM — Leave home*, *6:05 PM — 25-minute relaxed walk*, *6:30 PM — Park bench reflection*, *6:45 PM — 5-senses observation*, *7:10 PM — Stroll back*). Includes:
+   - **Checklist & Items to Bring**: Water bottle, layers, pocket notebook, or walking shoes.
+   - **Gentle Safety Guidance**: Hydration reminders, daylight awareness, and situational orientation.
+   - **Sheltered Weather Alternatives**: Covered porches, gazebo lookouts, or canopy paths for rainy or chilly days.
+   - **Step-Free Mobility Support**: Dedicated step-free toggle and automatic matching for flat, paved, or bench-friendly routes.
+3. **“Challenge Me” Sensory Micro-Challenges**: Concrete exercises designed to stimulate sensory awareness and break digital habits (e.g. *5-Senses Grounding*, *Canopy & Cloud Gaze*, *Three Leaf Architectures*, *Five Minutes Without Headphones*). Each challenge features a suggested duration (`~2m`), physical action, and reflection prompt.
 4. **Screen Exit Mode ("GO OUTSIDE")**: Once you begin your session, the interface collapses into a minimalist, high-contrast screen with a calm timer, one simple instruction, and a single core reminder:
    > *“Put your phone away when you're ready. The real world doesn't live on this screen.”*
-5. **Mindful Reflection**: When you return, Outside welcomes you back with a gentle mood check-in (😊 *Better*, 😌 *Relaxing*, ⚡ *Energizing*, 😐 *Okay*, 😴 *Still tired*) and an optional reflection log.
-6. **Local-First History & Wellbeing Stats**: Tracks cumulative outdoor minutes, outings, and mood reset rate over time—saved 100% locally in your browser.
+   - High-contrast, battery-friendly ambient interface.
+   - Keyboard navigation (`Space` to pause/resume countdown, `←` / `→` for phase navigation, `Esc` to return).
+   - Soothing singing bowl chime audio on departure and completion.
+5. **Mindful Reflection**: When you return, Outside welcomes you back with a gentle mood check-in (😊 *Better*, 😌 *Relaxing*, ⚡ *Energizing*, 😐 *Okay*, 😴 *Still tired*), an outing completion selector (*Full outing* vs. *Partial*), next-time pacing preference (*Similar pace*, *Different*, *Surprise me*), and an optional reflection log.
+6. **Local-First History & Wellbeing Stats**: Tracks cumulative outdoor minutes, outings, and mood reset rate over time—saved 100% locally in your browser with full data sanitization and a one-click log clear option.
 7. **Optional Setting Picker**: Choose nearby spaces (park, neighborhood, quiet bench, trail, waterfront) without mandatory GPS or location tracking.
+8. **“Plans Changed?” Real-World Mission Adaptation**: Real life happens—it starts raining, a meeting gets rescheduled to leave you with only 15 minutes, or you feel exhausted. One click opens the adaptation modal to instantly recalibrate your mission (adjusting duration to 15–60 min, swapping exposed trails for covered porch/canopy observations, filtering for step-free routes, or switching to solo/social mode) without starting over.
 
 ---
 
@@ -132,9 +145,10 @@ Outside connects out of the box to any local OpenAI-compatible inference server 
    ```
    *(Or for higher precision: `ollama run gemma2:9b`)*
 3. That's it! Outside automatically connects to `http://localhost:11434/v1/chat/completions`.
+4. Open the **AI Engine & Privacy** modal (`Gemma / Heuristic Architecture` in the footer) and click **Test Connection** to verify live model responsiveness and roundtrip latency (e.g. `Connected (1253ms) — gemma2:2b verified`).
 
 ### Local Heuristic Fallback (Zero Setup)
-If Gemma is not running, **Outside does not crash or fake AI responses**. It automatically activates its internal deterministic heuristic parser and displays a subtle `Local Engine` badge.
+If Gemma is not running or takes longer than the 30-second local threshold, **Outside does not crash or fake AI responses**. It automatically activates its internal deterministic heuristic parser and displays a truthful `Local Engine` badge with fallback diagnostics.
 
 ---
 
@@ -147,7 +161,7 @@ If Gemma is not running, **Outside does not crash or fake AI responses**. It aut
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/outside.git
+git clone https://github.com/tribhu05/outside.git
 cd outside
 
 # Install dependencies
@@ -159,9 +173,17 @@ npm run dev
 Open `http://localhost:5173` in your browser.
 
 ### Running Tests
-Outside includes a comprehensive Vitest test suite covering duration parsing, energy/mood detection, intent validation, deterministic scheduling, and AI fallback behavior:
+Outside includes both automated unit tests (Vitest) and full real-browser end-to-end tests (Puppeteer in Chrome):
+
 ```bash
+# Run unit & deterministic engine test suites (53/53 passing)
 npm test
+
+# Run real Chrome browser end-to-end user journey tests (52/52 passing)
+npm run test:e2e
+
+# Run TypeScript typecheck
+npm run lint
 ```
 
 ### Production Build

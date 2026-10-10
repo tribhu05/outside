@@ -48,4 +48,18 @@ describe('validateUserIntent', () => {
     expect(validated.locationPreference).toBe('park');
     expect(validated.timeOfDay).toBe('evening');
   });
+
+  it('validates mobilityPreference and digitalDetox fields', () => {
+    const validated1 = validateUserIntent({
+      mobilityPreference: 'step-free',
+      digitalDetox: true
+    });
+    expect(validated1.mobilityPreference).toBe('step-free');
+    expect(validated1.digitalDetox).toBe(true);
+
+    const validated2 = validateUserIntent({
+      mobilityPreference: 'flying' as any
+    });
+    expect(validated2.mobilityPreference).toBeUndefined();
+  });
 });

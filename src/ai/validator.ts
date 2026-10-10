@@ -60,6 +60,16 @@ export function validateUserIntent(input: unknown): UserIntent {
     timeOfDay = data.timeOfDay.toLowerCase() as TimeOfDay;
   }
 
+  // 9. Mobility preference
+  const validMobility = ['step-free', 'seated', 'any'];
+  let mobilityPreference: 'step-free' | 'seated' | 'any' | undefined;
+  if (typeof data.mobilityPreference === 'string' && validMobility.includes(data.mobilityPreference.toLowerCase())) {
+    mobilityPreference = data.mobilityPreference.toLowerCase() as 'step-free' | 'seated' | 'any';
+  }
+
+  // 10. Digital detox
+  const digitalDetox = typeof data.digitalDetox === 'boolean' ? data.digitalDetox : undefined;
+
   const notes = typeof data.notes === 'string' ? data.notes.slice(0, 200) : undefined;
 
   return {
@@ -71,6 +81,8 @@ export function validateUserIntent(input: unknown): UserIntent {
     socialPreference,
     locationPreference,
     timeOfDay,
+    mobilityPreference,
+    digitalDetox,
     notes
   };
 }

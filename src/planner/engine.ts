@@ -63,6 +63,22 @@ export function rankActivities(intent: UserIntent): { activity: ActivityDefiniti
       }
     }
 
+    // Mobility match
+    if (intent.mobilityPreference && intent.mobilityPreference !== 'any') {
+      if (activity.mobilityFriendly) {
+        score += 6;
+      } else if (intent.mobilityPreference === 'seated' && activity.category === 'jogging') {
+        score -= 10;
+      }
+    }
+
+    // Digital detox bonus for calming screen-free nature activities
+    if (intent.digitalDetox) {
+      if (activity.category === 'nature-observation' || activity.category === 'mindfulness') {
+        score += 4;
+      }
+    }
+
     return { activity, score };
   });
 
@@ -87,6 +103,7 @@ export function generateOutdoorPlan(
     : (ranked[0]?.activity || ACTIVITIES[0]);
   const totalDuration = Math.max(15, Math.min(240, intent.durationMinutes));
   const challenge = getRecommendedChallenge(
+    intent.digitalDetox ? 'digital-detox' :
     intent.mood === 'stressed' ? 'mindfulness' :
     intent.mood === 'tired' ? 'sensory' :
     intent.mood === 'curious' ? 'curiosity' : undefined
@@ -293,6 +310,29 @@ export function generateOutdoorPlan(
       durationMinutes: Math.min(totalDuration, r.activity.maxDuration)
     }));
 
+  // Items to bring
+  const itemsToBring = activity.itemsToBring && activity.itemsToBring.length > 0
+    ? activity.itemsToBring
+    : [
+        'Water bottle',
+        'Comfortable flat walking shoes',
+        'Light weather layer'
+      ];
+
+  // Safety note
+  let safetyNote = activity.safetyNote;
+  if (!safetyNote) {
+    if (intent.timeOfDay === 'evening' || intent.timeOfDay === 'night') {
+      safetyNote = 'Stay on well-lit paths, cross at pedestrian signals, and carry a pocket light or reflective layer if returning after dark.';
+    } else {
+      safetyNote = 'Cross roads at designated crossings, stay aware of your physical surroundings, and keep your footing secure on unpaved ground.';
+    }
+  }
+
+  // Indoor / sheltered alternative
+  const indoorShelteredAlternative = activity.shelteredAlternative ||
+    'In case of rain, wind, or sudden cold, move to a covered porch, gazebo, or building entrance to take in the outdoor air and sound under shelter.';
+
   return {
     id: 'plan-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 6),
     createdAt: new Date().toISOString(),
@@ -307,6 +347,9 @@ export function generateOutdoorPlan(
       'Leave notifications on silent',
       'Hydrate with a glass of water before heading out'
     ],
+    itemsToBring,
+    safetyNote,
+    indoorShelteredAlternative,
     milestones,
     challenge,
     intentSummary,

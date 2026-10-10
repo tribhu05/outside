@@ -32,6 +32,12 @@ export class HeuristicProvider implements IntentExtractor {
     // 8. Time of day
     const timeOfDay = this.parseTimeOfDay(lower);
 
+    // 9. Mobility preference
+    const mobility = this.parseMobility(lower);
+
+    // 10. Digital detox
+    const digitalDetox = this.parseDigitalDetox(lower);
+
     return validateUserIntent({
       durationMinutes: duration,
       energyLevel: energy,
@@ -41,6 +47,8 @@ export class HeuristicProvider implements IntentExtractor {
       socialPreference: social,
       locationPreference: location,
       timeOfDay: timeOfDay,
+      mobilityPreference: mobility,
+      digitalDetox: digitalDetox,
       notes: `Extracted via heuristic analysis of: "${text.slice(0, 80)}"`
     });
   }
@@ -131,12 +139,16 @@ export class HeuristicProvider implements IntentExtractor {
   }
 
   private parseBudget(text: string): BudgetType {
-    // Mentions of free / zero money
-    if (/\b(?:free|no\s*money|don'?t\s*want\s*to\s*spend|not\s*spending|zero\s*cost|\$0|broke|cheap|inexpensive|no\s*cost)\b/i.test(text)) {
+    // 1. Explicit mentions of free / zero money or $0 / ₹0
+    if (/(?:(?:\$|₹|€|£)\s*0\b|\b(?:free|no\s*money|don'?t\s*want\s*to\s*spend|not\s*spending|zero\s*cost|broke|no\s*cost|0\s*dollars|0\s*rupees)\b)/i.test(text)) {
       return 'free';
     }
-    // Mention of coffee or cafe or buying a drink
-    if (/\b(?:caf[eé]|coffee|tea|snack|drink|buy)\b/i.test(text)) {
+    // 2. Specific small currencies e.g. ₹100, ₹50, $5, 100 rs, 50 rupees, 5 bucks, etc.
+    if (/(?:₹|rs\.?|rupees?|\$|€|£)\s*[1-9]\d*/i.test(text) || /\b[1-9]\d*\s*(?:rs|rupees|bucks|dollars|euros)\b/i.test(text)) {
+      return 'low-cost';
+    }
+    // 3. Mentions of buying a drink, tea, coffee, snack, modest budget
+    if (/\b(?:caf[eé]|coffee|tea|chai|snack|drink|buy|low[\s-]cost|cheap|modest|inexpensive|under\s*\d+)\b/i.test(text)) {
       return 'low-cost';
     }
     return 'free';
@@ -147,11 +159,26 @@ export class HeuristicProvider implements IntentExtractor {
     if (/\b(?:bike|biking|cycle|cycling)\b/i.test(text)) return 'cycling';
     if (/\b(?:read|reading|book)\b/i.test(text)) return 'reading';
     if (/\b(?:sketch|sketching|draw|drawing|journal|journaling|write|writing)\b/i.test(text)) return 'sketching';
+    if (/\b(?:cloud|clouds|sky|canopy|treetops?)\b/i.test(text)) return 'mindfulness';
     if (/\b(?:sit|sitting|meditat(?:e|ion)|breathe|breathwork|mindful(?:ness)?|stretch|stretching)\b/i.test(text)) return 'mindfulness';
-    if (/\b(?:bird|birds|tree|trees|leaves|botanical|nature\s*observation|observe)\b/i.test(text)) return 'nature-observation';
+    if (/\b(?:bird|birds|tree|trees|leaves|botanical|nature\s*observation|observe|porch|balcony|gazebo|shelter)\b/i.test(text)) return 'nature-observation';
     if (/\b(?:explore|exploring|wander|wanderlust|streets?|architecture|neighborhood)\b/i.test(text)) return 'exploration';
-    if (/\b(?:walk|walking|stroll|ramble)\b/i.test(text)) return 'walking';
+    if (/\b(?:walk|walking|stroll|ramble|chai|tea)\b/i.test(text)) return 'walking';
     return 'any';
+  }
+
+  private parseMobility(text: string): 'step-free' | 'seated' | 'any' | undefined {
+    if (/\b(?:wheelchair|accessible|step[\s-]free|flat[\s-]path|flat\s*ground|paved|mobility)\b/i.test(text)) {
+      return 'step-free';
+    }
+    if (/\b(?:sit|seated|sitting\s*down|bench\s*only|can'?t\s*walk\s*far)\b/i.test(text)) {
+      return 'seated';
+    }
+    return undefined;
+  }
+
+  private parseDigitalDetox(text: string): boolean {
+    return /\b(?:without\s*(?:my\s*)?phone|no\s*phone|phone[\s-]free|unplugged|leave\s*(?:my\s*)?phone|screen[\s-]free|digital\s*detox)\b/i.test(text);
   }
 
   private parseSocial(text: string): SocialPreference {

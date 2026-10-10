@@ -1,6 +1,7 @@
-import React from 'react';
-import { OutdoorPlan } from '../types';
+import React, { useState } from 'react';
+import { OutdoorPlan, UserIntent } from '../types';
 import { Icon } from './Icon';
+import { PlansChangedModal } from './PlansChangedModal';
 import { 
   ArrowLeft, 
   ArrowRight,
@@ -11,7 +12,11 @@ import {
   Sparkles, 
   Shuffle, 
   CheckCircle2,
-  Compass
+  Compass,
+  Package,
+  ShieldAlert,
+  CloudRain,
+  RotateCcw
 } from 'lucide-react';
 
 interface PlanViewProps {
@@ -20,6 +25,7 @@ interface PlanViewProps {
   onBackToInput: () => void;
   onShuffleChallenge: () => void;
   onSelectAlternative?: (activityId: string) => void;
+  onAdjustPlan?: (adjustments: Partial<UserIntent>) => void;
 }
 
 export const PlanView: React.FC<PlanViewProps> = ({
@@ -27,19 +33,34 @@ export const PlanView: React.FC<PlanViewProps> = ({
   onStartSession,
   onBackToInput,
   onShuffleChallenge,
-  onSelectAlternative
+  onSelectAlternative,
+  onAdjustPlan
 }) => {
+  const [isPlansChangedOpen, setIsPlansChangedOpen] = useState(false);
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 py-8 animate-fade-in">
+    <div data-testid="plan-view" className="w-full max-w-2xl mx-auto px-4 py-8 animate-fade-in">
       {/* Top navigation */}
       <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={onBackToInput}
-          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Edit Request</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onBackToInput}
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Edit Request</span>
+          </button>
+
+          {onAdjustPlan && (
+            <button
+              onClick={() => setIsPlansChangedOpen(true)}
+              className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-800 bg-white/80 dark:bg-stone-900/80 text-nature-800 dark:text-nature-300 hover:bg-stone-50 dark:hover:bg-stone-850 font-medium transition-colors shadow-sm"
+              title="Adjust your plan if time, weather, or energy changed"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-nature-600 dark:text-nature-400" />
+              <span>Plans changed?</span>
+            </button>
+          )}
+        </div>
 
         {/* AI provenance tag */}
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-300">
@@ -55,7 +76,7 @@ export const PlanView: React.FC<PlanViewProps> = ({
           <span>Your Outside Plan</span>
         </div>
 
-        <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">
+        <h1 data-testid="plan-title" className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">
           {plan.title}
         </h1>
         <p className="text-stone-700 dark:text-stone-300 text-sm sm:text-base mb-6 leading-relaxed">
@@ -140,6 +161,11 @@ export const PlanView: React.FC<PlanViewProps> = ({
             <div className="flex items-center gap-2 text-nature-800 dark:text-nature-300 text-xs font-semibold uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-nature-600 dark:text-nature-400" />
               <span>Challenge Me</span>
+              {plan.challenge.suggestedDurationMinutes && (
+                <span className="text-[11px] font-normal lowercase tracking-normal text-nature-700 dark:text-nature-400">
+                  · ~{plan.challenge.suggestedDurationMinutes}m
+                </span>
+              )}
             </div>
             <button
               onClick={onShuffleChallenge}
@@ -154,27 +180,75 @@ export const PlanView: React.FC<PlanViewProps> = ({
           <h3 className="font-semibold text-base text-stone-900 dark:text-stone-100 mb-1">
             {plan.challenge.title}
           </h3>
-          <p className="text-stone-700 dark:text-stone-300 text-xs sm:text-sm leading-relaxed">
+          <p className="text-stone-700 dark:text-stone-300 text-xs sm:text-sm leading-relaxed mb-2.5">
             {plan.challenge.instruction}
           </p>
+          {plan.challenge.completionAction && (
+            <div className="text-[11px] text-nature-800 dark:text-nature-300 font-medium bg-nature-100/80 dark:bg-nature-900/60 rounded-lg px-2.5 py-1 inline-block">
+              Action: {plan.challenge.completionAction}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Preparation checklist */}
-      {plan.preparationTips.length > 0 && (
-        <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-white/60 dark:bg-stone-900/40 p-5 mb-6">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-300 mb-3 flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-stone-500" />
-            <span>Before Stepping Out</span>
-          </h3>
-          <ul className="space-y-1.5">
-            {plan.preparationTips.map((tip, i) => (
-              <li key={i} className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-nature-600 dark:bg-nature-400 flex-shrink-0" />
-                <span>{tip}</span>
-              </li>
-            ))}
-          </ul>
+      {/* Preparation checklist & Items to Bring */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        {plan.preparationTips.length > 0 && (
+          <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-white/60 dark:bg-stone-900/40 p-5">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-300 mb-3 flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-stone-500" />
+              <span>Before Stepping Out</span>
+            </h3>
+            <ul className="space-y-1.5">
+              {plan.preparationTips.map((tip, i) => (
+                <li key={i} className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-nature-600 dark:bg-nature-400 flex-shrink-0" />
+                  <span>{tip}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {plan.itemsToBring && plan.itemsToBring.length > 0 && (
+          <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-white/60 dark:bg-stone-900/40 p-5">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-300 mb-3 flex items-center gap-1.5">
+              <Package className="w-3.5 h-3.5 text-nature-600 dark:text-nature-400" />
+              <span>Suggested to Bring</span>
+            </h3>
+            <ul className="space-y-1.5">
+              {plan.itemsToBring.map((item, i) => (
+                <li key={i} className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-earth-600 dark:bg-earth-400 flex-shrink-0" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Safety & Weather Notes */}
+      {(plan.safetyNote || plan.indoorShelteredAlternative) && (
+        <div className="rounded-2xl border border-stone-200/90 dark:border-stone-800/90 bg-stone-50/70 dark:bg-stone-950/40 p-4 sm:p-5 mb-6 space-y-2.5">
+          {plan.safetyNote && (
+            <div className="flex items-start gap-2.5 text-xs text-stone-700 dark:text-stone-300">
+              <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-stone-900 dark:text-stone-100">Safety Guidance: </span>
+                <span>{plan.safetyNote}</span>
+              </div>
+            </div>
+          )}
+          {plan.indoorShelteredAlternative && (
+            <div className="flex items-start gap-2.5 text-xs text-stone-700 dark:text-stone-300 pt-2 border-t border-stone-200/60 dark:border-stone-800/60">
+              <CloudRain className="w-4 h-4 text-sky-600 dark:text-sky-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-stone-900 dark:text-stone-100">Weather Alternative: </span>
+                <span>{plan.indoorShelteredAlternative}</span>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -245,6 +319,14 @@ export const PlanView: React.FC<PlanViewProps> = ({
           </p>
         </div>
       </div>
+
+      {isPlansChangedOpen && onAdjustPlan && (
+        <PlansChangedModal
+          currentIntent={plan.extractedIntent}
+          onApplyAdjustments={onAdjustPlan}
+          onClose={() => setIsPlansChangedOpen(false)}
+        />
+      )}
     </div>
   );
 };

@@ -3,18 +3,18 @@ import { ArrowRight, Compass, Sparkles, MapPin, Clock } from 'lucide-react';
 import { LocationTypePreference } from '../types';
 
 interface InputSectionProps {
-  onGenerate: (prompt: string, locationPref?: LocationTypePreference) => void;
+  onGenerate: (prompt: string, locationPref?: LocationTypePreference, mobilityPref?: 'step-free' | 'seated' | 'any') => void;
   isLoading: boolean;
   activeProvider: 'gemma' | 'heuristic';
 }
 
 const EXAMPLE_PROMPTS = [
-  "I have 30 minutes free after class.",
-  "I feel stressed and want something peaceful.",
+  "I have 30 minutes free after class and low energy.",
+  "Suggest something peaceful outdoors for ₹100.",
+  "I feel stressed and want a short walk without my phone.",
+  "Give me something fun to do with a friend this evening.",
   "I have 90 minutes free this evening. I don't want to spend money and I want something relaxing.",
-  "Plan something fun with two friends.",
-  "I want to walk somewhere quiet without spending money.",
-  "I have 2 hours, I'm tired, and I don't want anything expensive."
+  "I want to walk somewhere quiet without spending money."
 ];
 
 const DURATION_PRESETS = [20, 30, 45, 60, 90];
@@ -37,11 +37,16 @@ export const InputSection: React.FC<InputSectionProps> = ({
   const [prompt, setPrompt] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<LocationTypePreference>('any');
   const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [stepFreeOnly, setStepFreeOnly] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!prompt.trim() || isLoading) return;
-    onGenerate(prompt.trim(), selectedLocation !== 'any' ? selectedLocation : undefined);
+    onGenerate(
+      prompt.trim(), 
+      selectedLocation !== 'any' ? selectedLocation : undefined,
+      stepFreeOnly ? 'step-free' : undefined
+    );
   };
 
   const handleSelectExample = (example: string) => {
@@ -124,43 +129,59 @@ export const InputSection: React.FC<InputSectionProps> = ({
 
           {/* Bar controls */}
           <div className="px-4 pb-4 pt-1 flex flex-wrap items-center justify-between gap-2 border-t border-stone-100 dark:border-stone-850">
-            {/* Optional Location Toggle */}
-            <div className="relative">
+            {/* Optional Preferences: Location & Step-Free */}
+            <div className="flex items-center gap-1.5">
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowLocationPicker(!showLocationPicker)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                  title="Optional location setting"
+                >
+                  <MapPin className="w-3.5 h-3.5 text-nature-600 dark:text-nature-400" />
+                  <span>
+                    {selectedLocation === 'any' ? 'Nearby Setting' : LOCATION_OPTIONS.find(l => l.value === selectedLocation)?.label}
+                  </span>
+                </button>
+
+                {showLocationPicker && (
+                  <div className="absolute bottom-full left-0 mb-2 w-48 py-1.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg z-20 text-xs">
+                    <div className="px-3 py-1 text-[11px] font-semibold text-stone-600 dark:text-stone-300 uppercase tracking-wider">
+                      Preferred Space
+                    </div>
+                    {LOCATION_OPTIONS.map((loc) => (
+                      <button
+                        key={loc.value}
+                        type="button"
+                        onClick={() => {
+                          setSelectedLocation(loc.value);
+                          setShowLocationPicker(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 flex items-center justify-between hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors ${
+                          selectedLocation === loc.value ? 'font-semibold text-nature-700 dark:text-nature-400' : 'text-stone-700 dark:text-stone-300'
+                        }`}
+                      >
+                        <span>{loc.label}</span>
+                        {selectedLocation === loc.value && <span className="w-1.5 h-1.5 rounded-full bg-nature-600" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Step-Free Mobility Option */}
               <button
                 type="button"
-                onClick={() => setShowLocationPicker(!showLocationPicker)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-                title="Optional location setting"
+                onClick={() => setStepFreeOnly(!stepFreeOnly)}
+                className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-xs rounded-lg transition-colors ${
+                  stepFreeOnly
+                    ? 'bg-nature-100 dark:bg-nature-950 text-nature-800 dark:text-nature-300 font-semibold border border-nature-200 dark:border-nature-800'
+                    : 'text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
+                }`}
+                title="Filter for flat, paved, or seated step-free activities"
               >
-                <MapPin className="w-3.5 h-3.5 text-nature-600 dark:text-nature-400" />
-                <span>
-                  {selectedLocation === 'any' ? 'Nearby Setting' : LOCATION_OPTIONS.find(l => l.value === selectedLocation)?.label}
-                </span>
+                <span>{stepFreeOnly ? '✓ Step-Free' : 'Step-Free'}</span>
               </button>
-
-              {showLocationPicker && (
-                <div className="absolute bottom-full left-0 mb-2 w-48 py-1.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg z-20 text-xs">
-                  <div className="px-3 py-1 text-[11px] font-semibold text-stone-600 dark:text-stone-300 uppercase tracking-wider">
-                    Preferred Space
-                  </div>
-                  {LOCATION_OPTIONS.map((loc) => (
-                    <button
-                      key={loc.value}
-                      type="button"
-                      onClick={() => {
-                        setSelectedLocation(loc.value);
-                        setShowLocationPicker(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 flex items-center justify-between hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors ${
-                        selectedLocation === loc.value ? 'font-semibold text-nature-700 dark:text-nature-400' : 'text-stone-700 dark:text-stone-300'
-                      }`}
-                    >
-                      <span>{loc.label}</span>
-                      {selectedLocation === loc.value && <span className="w-1.5 h-1.5 rounded-full bg-nature-600" />}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* Submit button */}

@@ -14,6 +14,10 @@ export interface ActivityDefinition {
   suitableSocial: SocialPreference[];
   preferredLocations: LocationTypePreference[];
   preparationTips: string[];
+  itemsToBring?: string[];
+  safetyNote?: string;
+  shelteredAlternative?: string;
+  mobilityFriendly?: boolean;
   iconName: string;
   defaultActionGuidance: string;
 }
@@ -38,6 +42,7 @@ export const ACTIVITIES: ActivityDefinition[] = [
       'Leave heavy bags at home'
     ],
     iconName: 'Footprints',
+    mobilityFriendly: true,
     defaultActionGuidance: 'Walk slowly enough that you could comfortably speak without losing breath.'
   },
   {
@@ -57,6 +62,7 @@ export const ACTIVITIES: ActivityDefinition[] = [
       'Take a light jacket or scarf if there is a breeze',
       'Sit with relaxed posture and eyes softly open'
     ],
+    mobilityFriendly: true,
     iconName: 'Armchair',
     defaultActionGuidance: 'Drop your shoulders down. Simply watch trees, birds, or drifting clouds.'
   },
@@ -239,5 +245,77 @@ export const ACTIVITIES: ActivityDefinition[] = [
     ],
     iconName: 'Bike',
     defaultActionGuidance: 'Coast smoothly and let the wind cool you down.'
+  },
+  {
+    id: 'sheltered-porch-observation',
+    name: 'Sheltered Porch & Fresh Air Reset',
+    category: 'nature-observation',
+    tagline: 'Experience outdoor breeze and natural light from a covered sanctuary.',
+    description: 'Step onto a covered porch, balcony, gazebo, or doorway shelter. Watch changing clouds or rain, breathe fresh air, and decompress without needing clear weather.',
+    minDuration: 15,
+    maxDuration: 45,
+    suitableEnergyLevels: ['low'],
+    suitableMoods: ['tired', 'stressed', 'reflective', 'neutral'],
+    suitableBudgets: ['free'],
+    suitableSocial: ['solo', 'partner', 'any'],
+    preferredLocations: ['neighborhood', 'quiet-bench', 'any'],
+    preparationTips: [
+      'Take a warm layer or throw blanket if it is breezy',
+      'Leave your phone inside the room'
+    ],
+    itemsToBring: ['Light blanket or warm fleece', 'Warm mug of tea or water'],
+    safetyNote: 'Ensure footing is dry and stable near doorway steps or balcony railings.',
+    shelteredAlternative: 'This is an ideal sheltered activity for rainy or cold weather.',
+    mobilityFriendly: true,
+    iconName: 'Home',
+    defaultActionGuidance: 'Lean back, breathe in the fresh outdoor coolness, and listen to the ambient breeze.'
+  },
+  {
+    id: 'cloud-canopy-watching',
+    name: 'Cloud & Tree Canopy Gazing',
+    category: 'mindfulness',
+    tagline: 'Rest your eyes on drifting clouds and swaying green branches.',
+    description: 'Find a comfortable reclined park bench or dry grassy lawn. Lie or lean back and gaze upward into the movement of tree crowns and cloud patterns.',
+    minDuration: 15,
+    maxDuration: 45,
+    suitableEnergyLevels: ['low', 'moderate'],
+    suitableMoods: ['stressed', 'tired', 'reflective'],
+    suitableBudgets: ['free'],
+    suitableSocial: ['solo', 'partner', 'any'],
+    preferredLocations: ['park', 'garden', 'quiet-bench'],
+    preparationTips: [
+      'Bring sunglasses or rest under leafy shade to protect your eyes',
+      'Lie down or lean your head comfortably back'
+    ],
+    itemsToBring: ['Small towel or sit-pad', 'Sunglasses'],
+    safetyNote: 'Avoid looking directly toward the sun; position yourself in tree shade.',
+    shelteredAlternative: 'If the ground is damp, sit under an open pavilion or covered park bench.',
+    mobilityFriendly: true,
+    iconName: 'Eye',
+    defaultActionGuidance: 'Fix your gaze on one drifting cloud until its shape naturally dissolves.'
+  },
+  {
+    id: 'budget-refreshment-stroll',
+    name: 'Neighborhood Chai & Stroll',
+    category: 'walking',
+    tagline: 'A gentle walk to pick up a warm tea or small fruit to enjoy outside.',
+    description: 'Stroll through local street corners to pick up a modest beverage or small fresh snack (₹20-₹100 / $2-3). Sit outside to savor each sip in fresh air.',
+    minDuration: 25,
+    maxDuration: 60,
+    suitableEnergyLevels: ['low', 'moderate'],
+    suitableMoods: ['social', 'reflective', 'restless', 'neutral'],
+    suitableBudgets: ['low-cost', 'free'],
+    suitableSocial: ['solo', 'friends', 'partner', 'any'],
+    preferredLocations: ['neighborhood', 'campus', 'park'],
+    preparationTips: [
+      'Keep a little pocket change or mobile pay ready for a modest local tea',
+      'Find an outdoor bench or stoop away from crowded car traffic'
+    ],
+    itemsToBring: ['Pocket change or small cash (₹50-100 / $3-5)', 'Comfortable walking shoes'],
+    safetyNote: 'Cross at pedestrian walkways and stay mindful of street traffic.',
+    shelteredAlternative: 'Sit under a shop awning or outdoor café umbrella if it starts sprinkling.',
+    mobilityFriendly: true,
+    iconName: 'Coffee',
+    defaultActionGuidance: 'Hold your warm cup with both hands and notice the aroma blending with outside air.'
   }
 ];

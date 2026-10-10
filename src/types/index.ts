@@ -34,6 +34,8 @@ export interface UserIntent {
   socialPreference: SocialPreference;
   locationPreference?: LocationTypePreference;
   timeOfDay?: TimeOfDay;
+  mobilityPreference?: 'step-free' | 'seated' | 'any';
+  digitalDetox?: boolean;
   notes?: string;
 }
 
@@ -43,6 +45,9 @@ export interface OutdoorChallenge {
   instruction: string;
   category: 'sensory' | 'botanical' | 'mindfulness' | 'curiosity' | 'digital-detox';
   difficulty: 'easy' | 'moderate';
+  suggestedDurationMinutes?: number;
+  completionAction?: string;
+  reflectionPrompt?: string;
 }
 
 export interface PlanMilestone {
@@ -76,6 +81,9 @@ export interface OutdoorPlan {
   budget: BudgetType;
   socialMode: SocialPreference;
   preparationTips: string[];
+  itemsToBring?: string[];
+  safetyNote?: string;
+  indoorShelteredAlternative?: string;
   milestones: PlanMilestone[];
   challenge?: OutdoorChallenge;
   intentSummary: string;
@@ -98,6 +106,8 @@ export interface CompletedSession {
   reflectionNote?: string;
   challengeCompleted?: boolean;
   challengeTitle?: string;
+  fullOutingCompleted?: boolean;
+  nextTimePreference?: 'similar' | 'different' | 'any';
 }
 
 export interface AIServiceConfig {
