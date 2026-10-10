@@ -84,6 +84,17 @@ export const App: React.FC = () => {
     });
   };
 
+  const handleSelectAlternative = (activityId: string) => {
+    if (!currentPlan) return;
+    const newPlan = generateOutdoorPlan(
+      currentPlan.extractedIntent,
+      currentPlan.providerUsed,
+      new Date(),
+      activityId
+    );
+    setCurrentPlan(newPlan);
+  };
+
   const handleStartSession = () => {
     setActiveView('screen-exit');
   };
@@ -152,6 +163,7 @@ export const App: React.FC = () => {
             onStartSession={handleStartSession}
             onBackToInput={() => setActiveView('input')}
             onShuffleChallenge={handleShuffleChallenge}
+            onSelectAlternative={handleSelectAlternative}
           />
         )}
 

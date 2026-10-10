@@ -56,6 +56,16 @@ export interface PlanMilestone {
   actionGuidance?: string;
 }
 
+export interface PlanAlternative {
+  activityId: string;
+  name: string;
+  tagline: string;
+  iconName: string;
+  energyLevel: EnergyLevel;
+  budget: BudgetType;
+  durationMinutes: number;
+}
+
 export interface OutdoorPlan {
   id: string;
   createdAt: string;
@@ -71,6 +81,7 @@ export interface OutdoorPlan {
   intentSummary: string;
   extractedIntent: UserIntent;
   providerUsed: 'gemma' | 'heuristic';
+  alternatives?: PlanAlternative[];
 }
 
 export type AfterMood = 'better' | 'relaxed' | 'energized' | 'okay' | 'still-tired';

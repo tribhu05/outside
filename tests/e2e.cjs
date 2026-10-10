@@ -159,6 +159,25 @@ async function runE2ETests() {
     const prepItems = await page.$$eval('ul.space-y-1\\.5 li', lis => lis.map(li => li.innerText));
     recordTest('Preparation tips present', prepItems.length >= 2, `Tips: ${prepItems.length}`);
 
+    // Check Suitable Alternatives section
+    const altSectionText = await page.$$eval('h3', headings => headings.map(h => h.innerText).join(' '));
+    recordTest('Suitable Alternatives section present', altSectionText.toUpperCase().includes('SUITABLE ALTERNATIVES'));
+
+    // Test 1-click alternative plan switch
+    const initialTitle = await page.$eval('h1', el => el.innerText);
+    const switched = await page.$$eval('button', btns => {
+      const b = btns.find(btn => btn.innerText.trim() === 'Switch');
+      if (b) { b.click(); return true; }
+      return false;
+    });
+    if (switched) {
+      await sleep(400);
+      const switchedTitle = await page.$eval('h1', el => el.innerText);
+      recordTest('1-click switch to alternative plan', switchedTitle !== initialTitle, `Switched to "${switchedTitle}"`);
+    } else {
+      recordTest('Alternative switch button found', false);
+    }
+
     // ==========================================
     // Phase 2, Test C: Start Outside Time
     // ==========================================
@@ -206,6 +225,22 @@ async function runE2ETests() {
     await sleep(300);
     const phase1Text = await page.$eval('div.font-mono.tracking-widest', el => el.innerText).catch(() => '');
     recordTest('Previous Phase navigation', phase1Text.toUpperCase().includes('PHASE 1'), `Phase: "${phase1Text}"`);
+
+    // Test Pause / Resume toggle
+    const pauseClicked = await page.$$eval('button', btns => {
+      const b = btns.find(btn => btn.innerText.includes('Pause'));
+      if (b) { b.click(); return true; }
+      return false;
+    });
+    await sleep(300);
+    const pausedStatusText = await page.$eval('[data-testid="timer-status"]', el => el.innerText).catch(() => '');
+    recordTest('Pause button toggles paused state', pausedStatusText.toUpperCase().includes('TIMER PAUSED'), `Status: "${pausedStatusText}"`);
+
+    // Test Resume via Spacebar shortcut
+    await page.keyboard.press('Space');
+    await sleep(300);
+    const resumedStatusText = await page.$eval('[data-testid="timer-status"]', el => el.innerText).catch(() => '');
+    recordTest('Spacebar shortcut resumes countdown', resumedStatusText.toUpperCase().includes('REMAINING TIME'), `Status: "${resumedStatusText}"`);
 
     // ==========================================
     // Phase 2, Test D: Complete the Session

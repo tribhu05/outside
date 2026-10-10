@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { OutdoorPlan, PlanMilestone } from '../types';
 import { playSingingBowlChime } from '../utils/audio';
 import { 
@@ -7,7 +7,9 @@ import {
   ChevronRight, 
   ChevronLeft, 
   CheckCircle, 
-  TreePine
+  TreePine,
+  Play,
+  Pause
 } from 'lucide-react';
 
 interface ScreenExitModeProps {
@@ -25,6 +27,7 @@ export const ScreenExitMode: React.FC<ScreenExitModeProps> = ({
   const [secondsRemaining, setSecondsRemaining] = useState(plan.totalDurationMinutes * 60);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Play gentle bell on entrance
   useEffect(() => {
@@ -52,12 +55,13 @@ export const ScreenExitMode: React.FC<ScreenExitModeProps> = ({
 
   // Countdown timer
   useEffect(() => {
+    if (isPaused) return;
     const timer = setInterval(() => {
       setSecondsRemaining((prev) => Math.max(0, prev - 1));
       setElapsedSeconds((prev) => prev + 1);
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isPaused]);
 
   // Filter out the 0-minute 'Done' milestone for active step navigation
   const activeMilestones = plan.milestones.filter(m => m.durationMinutes > 0);
@@ -69,26 +73,51 @@ export const ScreenExitMode: React.FC<ScreenExitModeProps> = ({
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  const handleNextPhase = () => {
+  const handleComplete = useCallback(() => {
+    const actualMinutes = Math.max(1, Math.round(elapsedSeconds / 60));
+    if (soundEnabled) playSingingBowlChime(432);
+    onFinishSession(actualMinutes);
+  }, [elapsedSeconds, soundEnabled, onFinishSession]);
+
+  const handleNextPhase = useCallback(() => {
     if (currentMilestoneIndex < activeMilestones.length - 1) {
       setCurrentMilestoneIndex(prev => prev + 1);
       if (soundEnabled) playSingingBowlChime(528);
     } else {
       handleComplete();
     }
-  };
+  }, [currentMilestoneIndex, activeMilestones.length, soundEnabled, handleComplete]);
 
-  const handlePrevPhase = () => {
+  const handlePrevPhase = useCallback(() => {
     if (currentMilestoneIndex > 0) {
       setCurrentMilestoneIndex(prev => prev - 1);
     }
-  };
+  }, [currentMilestoneIndex]);
 
-  const handleComplete = () => {
-    const actualMinutes = Math.max(1, Math.round(elapsedSeconds / 60));
-    if (soundEnabled) playSingingBowlChime(432);
-    onFinishSession(actualMinutes);
-  };
+  // Keyboard navigation shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setIsPaused(prev => !prev);
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        handleNextPhase();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        handlePrevPhase();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        onCancelSession();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleNextPhase, handlePrevPhase, onCancelSession]);
 
   return (
     <div className="fixed inset-0 z-50 bg-stone-950 text-stone-100 flex flex-col justify-between p-6 sm:p-10 select-none animate-fade-in overflow-y-auto">
@@ -141,8 +170,19 @@ export const ScreenExitMode: React.FC<ScreenExitModeProps> = ({
           <div className="text-5xl sm:text-7xl font-mono font-light tracking-tight text-nature-200 mb-2">
             {formatTime(secondsRemaining)}
           </div>
-          <div className="text-xs text-stone-400 uppercase tracking-widest font-mono">
-            {secondsRemaining > 0 ? 'Remaining Time Outside' : 'Time Complete'}
+          <div data-testid="timer-status" className="text-xs text-stone-400 uppercase tracking-widest font-mono">
+            {secondsRemaining > 0 ? (isPaused ? 'Timer Paused' : 'Remaining Time Outside') : 'Time Complete'}
+          </div>
+          <div className="mt-3">
+            <button
+              type="button"
+              onClick={() => setIsPaused(!isPaused)}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-stone-800/80 hover:bg-stone-750 text-stone-300 hover:text-white transition-colors"
+              title={isPaused ? "Resume session timer" : "Pause session timer"}
+            >
+              {isPaused ? <Play className="w-3 h-3 text-nature-400" /> : <Pause className="w-3 h-3" />}
+              <span>{isPaused ? 'Resume' : 'Pause'}</span>
+            </button>
           </div>
         </div>
 
@@ -185,6 +225,11 @@ export const ScreenExitMode: React.FC<ScreenExitModeProps> = ({
             <span className="hidden sm:inline">Next</span>
             <ChevronRight className="w-4 h-4" />
           </button>
+        </div>
+
+        {/* Subtle keyboard shortcuts hint */}
+        <div className="text-center text-[11px] font-mono text-stone-500 pt-3">
+          <span>Space: {isPaused ? 'Resume' : 'Pause'} · ← / →: Step · Esc: Exit</span>
         </div>
       </div>
     </div>

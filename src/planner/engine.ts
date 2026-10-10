@@ -1,4 +1,4 @@
-import { UserIntent, OutdoorPlan, PlanMilestone, EnergyLevel } from '../types';
+import { UserIntent, OutdoorPlan, PlanMilestone, PlanAlternative, EnergyLevel } from '../types';
 import { ACTIVITIES, ActivityDefinition } from './activityDatabase';
 import { getRecommendedChallenge } from './challenges';
 
@@ -13,7 +13,7 @@ function formatClockTime(startDate: Date, minutesToAdd: number): string {
   return `${hours}:${minuteStr} ${ampm}`;
 }
 
-export function selectBestActivity(intent: UserIntent): ActivityDefinition {
+export function rankActivities(intent: UserIntent): { activity: ActivityDefinition; score: number }[] {
   const scored = ACTIVITIES.map(activity => {
     let score = 0;
 
@@ -67,15 +67,24 @@ export function selectBestActivity(intent: UserIntent): ActivityDefinition {
   });
 
   scored.sort((a, b) => b.score - a.score);
-  return scored[0]?.activity || ACTIVITIES[0];
+  return scored;
+}
+
+export function selectBestActivity(intent: UserIntent): ActivityDefinition {
+  const ranked = rankActivities(intent);
+  return ranked[0]?.activity || ACTIVITIES[0];
 }
 
 export function generateOutdoorPlan(
   intent: UserIntent,
   providerUsed: 'gemma' | 'heuristic' = 'heuristic',
-  startTime: Date = new Date()
+  startTime: Date = new Date(),
+  forcedActivityId?: string
 ): OutdoorPlan {
-  const activity = selectBestActivity(intent);
+  const ranked = rankActivities(intent);
+  const activity = forcedActivityId 
+    ? (ACTIVITIES.find(a => a.id === forcedActivityId) || ranked[0]?.activity || ACTIVITIES[0])
+    : (ranked[0]?.activity || ACTIVITIES[0]);
   const totalDuration = Math.max(15, Math.min(240, intent.durationMinutes));
   const challenge = getRecommendedChallenge(
     intent.mood === 'stressed' ? 'mindfulness' :
@@ -270,6 +279,20 @@ export function generateOutdoorPlan(
   // Summary generation
   const intentSummary = `${totalDuration} mins · ${intent.energyLevel} energy · ${intent.budget === 'free' ? 'No cost' : 'Low cost'} · ${intent.socialPreference}`;
 
+  // Find top 2 alternative activities matching the intent
+  const alternatives: PlanAlternative[] = ranked
+    .filter(r => r.activity.id !== activity.id)
+    .slice(0, 2)
+    .map(r => ({
+      activityId: r.activity.id,
+      name: r.activity.name,
+      tagline: r.activity.tagline,
+      iconName: r.activity.iconName,
+      energyLevel: r.activity.suitableEnergyLevels[0] || intent.energyLevel,
+      budget: r.activity.suitableBudgets[0] || intent.budget,
+      durationMinutes: Math.min(totalDuration, r.activity.maxDuration)
+    }));
+
   return {
     id: 'plan-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 6),
     createdAt: new Date().toISOString(),
@@ -288,7 +311,8 @@ export function generateOutdoorPlan(
     challenge,
     intentSummary,
     extractedIntent: intent,
-    providerUsed
+    providerUsed,
+    alternatives
   };
 }
 

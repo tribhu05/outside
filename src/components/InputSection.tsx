@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Compass, Sparkles, MapPin } from 'lucide-react';
+import { ArrowRight, Compass, Sparkles, MapPin, Clock } from 'lucide-react';
 import { LocationTypePreference } from '../types';
 
 interface InputSectionProps {
@@ -9,13 +9,15 @@ interface InputSectionProps {
 }
 
 const EXAMPLE_PROMPTS = [
-  "I have 45 minutes and need to clear my head.",
+  "I have 30 minutes free after class.",
+  "I feel stressed and want something peaceful.",
   "I have 90 minutes free this evening. I don't want to spend money and I want something relaxing.",
   "Plan something fun with two friends.",
-  "I don't want to spend any money.",
-  "I want something active this evening.",
+  "I want to walk somewhere quiet without spending money.",
   "I have 2 hours, I'm tired, and I don't want anything expensive."
 ];
+
+const DURATION_PRESETS = [20, 30, 45, 60, 90];
 
 const LOCATION_OPTIONS: { label: string; value: LocationTypePreference }[] = [
   { label: 'Anywhere', value: 'any' },
@@ -46,6 +48,19 @@ export const InputSection: React.FC<InputSectionProps> = ({
     setPrompt(example);
   };
 
+  const handleDurationChip = (minutes: number) => {
+    if (!prompt.trim()) {
+      setPrompt(`I have ${minutes} minutes free and want to head outside.`);
+    } else {
+      const durationRegex = /\b(\d+)\s*(minutes|mins|min|m|hours|hour|hrs|hr)\b/i;
+      if (durationRegex.test(prompt)) {
+        setPrompt(prompt.replace(durationRegex, `${minutes} minutes`));
+      } else {
+        setPrompt(`${prompt.trim()} (I have ${minutes} minutes free)`);
+      }
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -71,6 +86,25 @@ export const InputSection: React.FC<InputSectionProps> = ({
 
       {/* Main input card */}
       <form onSubmit={handleSubmit} className="relative">
+        {/* Quick duration helper chips */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-2.5 px-1">
+          <span className="text-[11px] font-medium text-stone-600 dark:text-stone-300 flex items-center gap-1 mr-1">
+            <Clock className="w-3 h-3 text-nature-600 dark:text-nature-400" />
+            <span>Time presets:</span>
+          </span>
+          {DURATION_PRESETS.map((mins) => (
+            <button
+              key={mins}
+              type="button"
+              onClick={() => handleDurationChip(mins)}
+              disabled={isLoading}
+              className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 hover:bg-nature-100 dark:bg-stone-850 dark:hover:bg-nature-950/80 text-stone-700 hover:text-nature-900 dark:text-stone-300 dark:hover:text-nature-200 border border-stone-200/80 dark:border-stone-800 transition-colors"
+            >
+              {mins}m
+            </button>
+          ))}
+        </div>
+
         <div className="relative rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm transition-all focus-within:ring-2 focus-within:ring-nature-600/40 focus-within:border-nature-600">
           <textarea
             value={prompt}
@@ -81,6 +115,12 @@ export const InputSection: React.FC<InputSectionProps> = ({
             placeholder="e.g. I have 90 minutes free this evening. I don't want to spend money and I want something relaxing..."
             className="w-full resize-none p-4 sm:p-5 text-base sm:text-lg bg-transparent text-stone-900 dark:text-stone-50 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none rounded-2xl"
           />
+
+          {prompt.trim().length > 0 && prompt.trim().length < 12 && (
+            <div className="px-5 pb-1 text-[11px] text-stone-600 dark:text-stone-400">
+              💡 Tip: Mention available time (e.g., 45m) or what you feel like doing.
+            </div>
+          )}
 
           {/* Bar controls */}
           <div className="px-4 pb-4 pt-1 flex flex-wrap items-center justify-between gap-2 border-t border-stone-100 dark:border-stone-850">

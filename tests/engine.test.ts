@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateOutdoorPlan, selectBestActivity } from '../src/planner/engine';
+import { generateOutdoorPlan, selectBestActivity, rankActivities } from '../src/planner/engine';
 import { UserIntent } from '../src/types';
 
 describe('Outdoor Activity Engine', () => {
@@ -104,6 +104,31 @@ describe('Outdoor Activity Engine', () => {
 
       const planHeuristic = generateOutdoorPlan(baseIntent, 'heuristic');
       expect(planHeuristic.providerUsed).toBe('heuristic');
+    });
+
+    it('computes top suitable alternatives for a plan', () => {
+      const plan = generateOutdoorPlan(baseIntent);
+      expect(plan.alternatives).toBeDefined();
+      expect(plan.alternatives?.length).toBeGreaterThanOrEqual(1);
+      expect(plan.alternatives?.[0].activityId).toBeDefined();
+      expect(plan.alternatives?.[0].name).toBeDefined();
+    });
+
+    it('respects forcedActivityId when switching plans to an alternative', () => {
+      const initialPlan = generateOutdoorPlan(baseIntent);
+      const alt = initialPlan.alternatives?.[0];
+      expect(alt).toBeDefined();
+
+      if (alt) {
+        const switchedPlan = generateOutdoorPlan(baseIntent, 'heuristic', new Date(), alt.activityId);
+        expect(switchedPlan.title).toContain(alt.name);
+      }
+    });
+
+    it('ranks activities deterministically via rankActivities', () => {
+      const ranked = rankActivities(baseIntent);
+      expect(ranked.length).toBeGreaterThan(0);
+      expect(ranked[0].score).toBeGreaterThanOrEqual(ranked[ranked.length - 1].score);
     });
   });
 });
