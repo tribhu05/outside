@@ -1,242 +1,414 @@
-# Outside
+<div align="center">
 
-> **Turn free time into time outside.**  
-> Built for the DEV Hacktoberfest 2026 Week 1 Challenge: **“Touch Grass.”**
+# Outside 🌿
+### *Touch Grass. Find Your Next Adventure.*
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/tribhu05/outside)
+**An open-source outdoor activity companion powered by local open-weight AI, engineered to minimize screen time and maximize real-world experiences.**
+
+Built for the **DEV Hacktoberfest 2026** Week 1 Challenge: **“Touch Grass.”**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-10b981.svg?style=flat-square)](LICENSE)
+[![React](https://img.shields.io/badge/React-19-61dafb.svg?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178c6.svg?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6-646cff.svg?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC.svg?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Google Gemma](https://img.shields.io/badge/AI-Google_Gemma_2-ea4335.svg?style=flat-square&logo=google&logoColor=white)](https://ai.google.dev/gemma)
+[![Ollama](https://img.shields.io/badge/Runtime-Ollama-000000.svg?style=flat-square&logo=ollama&logoColor=white)](https://ollama.com/)
+[![Tests Passing](https://img.shields.io/badge/Tests-53%20Vitest%20%7C%2052%20E2E%20Passing-10b981.svg?style=flat-square)](tests/)
+
+[Quick Start](#-quick-start) • [The Philosophy](#-why-outside-exists) • [Core Features](#-core-features) • [Architecture](#-ai-architecture--system-design) • [HF26 Sponsors](#-hf26-sponsors--technology-acknowledgements) • [Documentation](docs/)
+
+<br />
+
+<img src="docs/screenshots/01-input.png" alt="Outside Interface" width="90%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);" />
+
+</div>
 
 ---
 
-## Why?
+## 📖 Table of Contents
 
-We live in a world where modern technology is engineered to trap our attention inside glowing rectangles. Even "wellness" and "habit" apps frequently demand endless daily logging, notifications, and screen time.
-
-**Outside** takes the opposite approach. Its explicit measure of success is **how quickly you put your phone away and step into the open air**.
+- [Why Outside Exists](#-why-outside-exists)
+- [How It Works](#-how-it-works)
+- [Visual Product Tour](#-visual-product-tour)
+- [Core Features](#-core-features)
+- [AI Architecture & System Design](#-ai-architecture--system-design)
+- [HF26 Sponsors & Technology Acknowledgements](#-hf26-sponsors--technology-acknowledgements)
+- [Technology Stack](#-technology-stack)
+- [Quick Start](#-quick-start)
+- [Running Gemma Locally with Ollama](#-running-gemma-locally-with-ollama)
+- [Testing & Verification](#-testing--verification)
+- [Deployment Guide](#-deployment-guide)
+- [Project Roadmap](#-project-roadmap)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
-## The Idea
+## 💡 Why Outside Exists
+
+### The Modern Dilemma
+Most technology products are engineered to capture attention, maximize daily active time, and trap users inside glowing glass rectangles. Even modern "mindfulness" and "wellness" applications frequently fall into this trap: they ask you to log daily streaks, read articles, scroll activity feeds, or have multi-turn conversations with chatbots.
+
+**Outside takes the opposite approach.** Its primary success metric is **how quickly you put your phone away and step into the open air.**
 
 > **“AI understands you. The app gets you outside.”**
 
-You tell Outside what you need in natural, everyday language:
-
-> *“I have 90 minutes free this evening. I don't want to spend money and I want something relaxing.”*
-
-An open-weight model—**Google Gemma**—interprets your natural language, energy level, budget, and mood into structured parameters. Then, a deterministic **Outdoor Activity Engine** calculates a realistic, step-by-step outdoor plan with real-world clock timestamps, sensory challenges, and a distraction-free screen exit mode.
-
----
-
-## Key Features
-
-1. **Natural-Language Intent Input**: Speak or type naturally about your free time, emotional state, budget, or companions:
-   - *“I have 30 minutes free after class and low energy.”*
-   - *“Suggest something peaceful outdoors for ₹100.”*
-   - *“I feel stressed and want a short walk without my phone.”*
-   - *“Give me something fun to do with a friend this evening.”*
-   - *“I have 90 minutes free this evening. I don't want to spend money and I want something relaxing.”*
-2. **Deterministic Outdoor Plan Generator**: Calculates a realistic timeline with real-world clock times (e.g., *6:00 PM — Leave home*, *6:05 PM — 25-minute relaxed walk*, *6:30 PM — Park bench reflection*, *6:45 PM — 5-senses observation*, *7:10 PM — Stroll back*). Includes:
-   - **Checklist & Items to Bring**: Water bottle, layers, pocket notebook, or walking shoes.
-   - **Gentle Safety Guidance**: Hydration reminders, daylight awareness, and situational orientation.
-   - **Sheltered Weather Alternatives**: Covered porches, gazebo lookouts, or canopy paths for rainy or chilly days.
-   - **Step-Free Mobility Support**: Dedicated step-free toggle and automatic matching for flat, paved, or bench-friendly routes.
-3. **“Challenge Me” Sensory Micro-Challenges**: Concrete exercises designed to stimulate sensory awareness and break digital habits (e.g. *5-Senses Grounding*, *Canopy & Cloud Gaze*, *Three Leaf Architectures*, *Five Minutes Without Headphones*). Each challenge features a suggested duration (`~2m`), physical action, and reflection prompt.
-4. **Screen Exit Mode ("GO OUTSIDE")**: Once you begin your session, the interface collapses into a minimalist, high-contrast screen with a calm timer, one simple instruction, and a single core reminder:
-   > *“Put your phone away when you're ready. The real world doesn't live on this screen.”*
-   - High-contrast, battery-friendly ambient interface.
-   - Keyboard navigation (`Space` to pause/resume countdown, `←` / `→` for phase navigation, `Esc` to return).
-   - Soothing singing bowl chime audio on departure and completion.
-5. **Mindful Reflection**: When you return, Outside welcomes you back with a gentle mood check-in (😊 *Better*, 😌 *Relaxing*, ⚡ *Energizing*, 😐 *Okay*, 😴 *Still tired*), an outing completion selector (*Full outing* vs. *Partial*), next-time pacing preference (*Similar pace*, *Different*, *Surprise me*), and an optional reflection log.
-6. **Local-First History & Wellbeing Stats**: Tracks cumulative outdoor minutes, outings, and mood reset rate over time—saved 100% locally in your browser with full data sanitization and a one-click log clear option.
-7. **Optional Setting Picker**: Choose nearby spaces (park, neighborhood, quiet bench, trail, waterfront) without mandatory GPS or location tracking.
-8. **“Plans Changed?” Real-World Mission Adaptation**: Real life happens—it starts raining, a meeting gets rescheduled to leave you with only 15 minutes, or you feel exhausted. One click opens the adaptation modal to instantly recalibrate your mission (adjusting duration to 15–60 min, swapping exposed trails for covered porch/canopy observations, filtering for step-free routes, or switching to solo/social mode) without starting over.
-
----
-
-## How AI Works
-
-Outside uses open-weight AI (**Google Gemma 2 / Gemma 3**) strictly where language models excel: **unstructured human language understanding**.
-
-### The Flow:
 ```
-User Natural Language
-        ↓
-Google Gemma (Open-Weight Model)
-        ↓
-Structured User Intent (JSON)
-        ↓
-Validation & Boundary Normalization
-        ↓
-Deterministic Outdoor Activity Engine
-        ↓
-Realistic Step-by-Step Outdoor Plan
-        ↓
-Screen Exit Mode ("Go Outside")
+Tell Outside how you feel ➔ Receive one achievable mission ➔ Put phone away ➔ Experience the real world ➔ Reflect
 ```
 
-Gemma receives instructions to output a strict JSON payload:
-```json
-{
-  "durationMinutes": 90,
-  "energyLevel": "low",
-  "mood": "stressed",
-  "budget": "free",
-  "activityPreference": "walking",
-  "socialPreference": "solo",
-  "locationPreference": "park",
-  "timeOfDay": "evening"
-}
-```
+### Outside vs. Traditional Apps
 
-The validated intent is then handed over to the deterministic engine to construct the physical schedule.
+| Capability | Traditional Wellness & Habit Apps | Outside 🌿 |
+| :--- | :--- | :--- |
+| **Primary Goal** | Maximize screen time, retention, and DAUs | **Minimize screen time; maximize time spent outside** |
+| **AI Role** | Open-ended chatbots keeping you on the screen | **Single-turn structured parameter extraction** |
+| **Itinerary Generation** | Hallucinates unrealistic routes & timing | **Deterministic engine with real-world clock timestamps** |
+| **Real-World Changes** | Forces you to restart the flow from scratch | **1-click "Plans Changed?" dynamic recalibration** |
+| **Privacy & Telemetry** | Heavy cloud logging, ads, and telemetry | **100% on-device (Ollama + browser localStorage)** |
 
 ---
 
-## Why Not Just Use a Chatbot?
+## 🧭 How It Works
 
-Chatbots frequently:
-- Hallucinate unrealistic outdoor itineraries or dangerous timeframes.
-- Write chat walls of text that keep you reading on your screen.
-- Encourage multi-turn conversation loops that defeat the purpose of stepping outdoors.
+Outside breaks down the friction between intending to go outside and actually stepping through the door:
 
-By keeping the AI focused exclusively on **intent extraction** while deterministic code governs **activity matching and milestone timing**, Outside guarantees reliability, safety, and an immediate exit from the screen.
-
----
-
-## Local-First & Privacy Guarantee
-
-- **Zero Cloud Analytics**: No third-party trackers, no behavioral telemetry, and no ad scripts.
-- **Local AI by Default**: Connects directly to your local Gemma instance over `localhost`. No private conversations or mental states are dispatched to proprietary cloud servers.
-- **On-Device Storage**: Your completed sessions and reflection notes live exclusively in your browser's `localStorage`. You can export your data to JSON or clear it at any time.
+1. **Describe Your Situation Naturally**: Type or click a natural prompt:
+   > *“I have 90 minutes free this evening. I don't want to spend money and I want something relaxing.”*
+2. **Local Open-Weight AI Comprehension**: Google Gemma (`gemma2:2b`) parses your natural language into strict, typed constraints—duration, energy level, budget, mood, and social preferences.
+3. **Deterministic Mission Construction**: A verified scheduling engine converts these parameters into a clock-based timeline (e.g. *6:00 PM Departure*, *6:05 PM Outbound stroll*, *6:35 PM Mindful observation*, *7:00 PM Sensory pause*, *7:15 PM Stroll home*), alongside preparation checklists and sensory micro-challenges.
+4. **Distraction-Free Screen Exit Mode**: Click **"Start Outside Time 🌿"**. The interface sheds menus, cards, and web clutter, presenting only a calm countdown, milestone instruction, and ambient audio singing bowl bell.
+5. **Mindful Return & Local Log**: Return inside, record your mood shift (😊 *Better*, 😌 *Relaxing*, ⚡ *Energizing*), and save your session locally on-device.
 
 ---
 
-## AI Architecture
+## 📸 Visual Product Tour
+
+<div align="center">
+
+| **1. Natural-Language Input** | **2. Structured Outdoor Plan** |
+| :---: | :---: |
+| <img src="docs/screenshots/01-input.png" width="100%" style="border-radius: 8px;" /> | <img src="docs/screenshots/02-plan.png" width="100%" style="border-radius: 8px;" /> |
+| *Express constraints naturally with zero menu friction* | *Clock-based timeline, items to bring, and sensory task* |
+| **3. Minimalist Screen Exit Mode** | **4. Local Wellbeing Log** |
+| <img src="docs/screenshots/03-screen-exit.png" width="100%" style="border-radius: 8px;" /> | <img src="docs/screenshots/04-history.png" width="100%" style="border-radius: 8px;" /> |
+| *Minimal ambient timer with singing bowl chimes* | *100% local persistence with mood shift tracking* |
+
+</div>
+
+> 🔍 **Judges & Evaluators**: A complete, step-by-step 2-minute demonstration walkthrough is available in [`docs/demo-script.md`](docs/demo-script.md).
+
+---
+
+## ✨ Core Features
+
+### 1. Natural-Language Mission Generation
+- Understands freeform input covering time, mood, budget, energy, and companions:
+  - *“I have 30 minutes free after class and low energy.”*
+  - *“Suggest something peaceful outdoors for ₹100.”*
+  - *“I feel stressed and want a short walk without my phone.”*
+  - *“Give me something fun to do with a friend this evening.”*
+- Zero multi-turn chat loops; delivers one focused, actionable mission immediately.
+
+### 2. Local AI Inference with Google Gemma
+- Connects out of the box to local OpenAI-compatible endpoints (default: `http://localhost:11434/v1/chat/completions` running `gemma2:2b`).
+- AI extracts parameters only; it never hallucinates physical trail lengths or dangerous timing.
+
+### 3. Transparent AI Connection Diagnostics
+- In-app **AI Engine & Privacy** modal with a live **Test Connection** button.
+- Sends a minimal health ping (`max_tokens: 5`) to confirm model presence in memory.
+- Measures real roundtrip latency (e.g. `Connected (1253ms) — gemma2:2b verified`).
+- Configured with a realistic **30-second timeout** accommodating local consumer CPU/GPU inference.
+
+### 4. Zero-Crash Deterministic Heuristic Fallback
+- If Ollama is offline or takes longer than the timeout, Outside activates an internal deterministic heuristic engine (regex and semantic extraction).
+- Displays an honest `Local Engine` badge—**never fakes AI responses and never crashes**.
+
+### 5. "Plans Changed?" Real-World Mission Adaptation
+Real life is unpredictable. If weather turns or energy drops, click **"Plans changed?"** to adapt the active mission on the fly:
+- **Available Time**: Quickly adjust to 15m, 30m, 45m, or 60m.
+- **Energy Level**: Switch between Exhausted / Low, Moderate, or Energized.
+- **Weather & Shelter**: Swaps open trails for covered porches, gazebo lookouts, or sheltered canopy paths.
+- **Step-Free Accessibility**: Filters for flat, paved, stair-free routes with nearby seating.
+- **Social Mode**: Toggles between solo quiet time and walking with friends.
+
+### 6. "Challenge Me" Sensory Micro-Challenges
+Tactile exercises designed to break digital autopilot and stimulate sensory grounding:
+- *5-Senses Grounding* (Sight, touch, sound, smell, presence)
+- *Canopy & Cloud Gaze* (Looking upward away from screens)
+- *Three Leaf Architectures* (Observing biological fractal patterns)
+- *Five Minutes Without Headphones* (Acoustic horizon listening)
+- Includes difficulty ratings, completion actions, reflection prompts, and a shuffle button.
+
+### 7. Distraction-Free Screen Exit Mode ("GO OUTSIDE")
+- High-contrast, battery-friendly ambient interface.
+- Large countdown timer with active milestone guidance.
+- Pure Web Audio API synthesized harmonic singing bowl bell (432 Hz) on departure and completion—no external audio files to download.
+- Full keyboard control (`Space` to pause/resume, `←` / `→` for milestone navigation, `Esc` to return).
+- Screen Wake Lock API integration to keep guidance legible while pocketing the device.
+
+### 8. Mindful Reflection & On-Device Storage
+- Post-outing check-in recording mood shift (😊 *Better*, 😌 *Relaxing*, ⚡ *Energizing*, 😐 *Okay*, 😴 *Still tired*).
+- Outing completion toggle (*Full outing* vs. *Partial*) and next-time pacing preferences.
+- Tracks cumulative outdoor minutes, total outings, and mood reset percentage.
+- **100% On-Device**: All history resides in browser `localStorage`. Includes one-click JSON export and clear data options.
+
+---
+
+## 🏗️ AI Architecture & System Design
+
+Outside maintains a strict separation of concerns: **unstructured natural language understanding** is handled by open-weight AI, while **schedule generation, clock calculations, and safety rules** are handled deterministically.
 
 ```mermaid
 flowchart TD
-    A[Natural Language Query] --> B{AI Router}
-    B -- "Gemma Online" --> C[Google Gemma 2 / 3\nLocal Open-Weight Model]
-    B -- "Gemma Offline" --> D[Deterministic Heuristic Engine\nRegex & NLP Fallback]
-    C --> E[JSON Schema Extraction]
-    D --> F[Intent Validation & Bounds Clamping]
-    E --> F
-    F --> G[Structured UserIntent]
-    G --> H[Deterministic Activity Engine]
-    H --> I[(Curated Outdoor Library)]
-    H --> J[(Sensory Challenges)]
-    H --> K[Clock Milestone Generator]
-    K --> L[Outdoor Plan UI]
-    L --> M[Screen Exit Mode]
-    M --> N([User Goes Outside 🌿])
+    subgraph Browser["Browser Client (Outside Web App)"]
+        User["User Natural-Language Input"] --> Router{"AI Service Router\n(aiService.ts)"}
+        
+        Router -->|"Gemma Preferred & Online"| GP["Gemma Provider\n(gemmaProvider.ts)"]
+        Router -->|"Gemma Offline / Timeout"| HP["Deterministic Heuristic Parser\n(heuristicProvider.ts)"]
+        
+        GP -->|"HTTP POST /v1/chat/completions"| Ollama["Local Ollama API\n(localhost:11434)"]
+        Ollama --> Gemma["Google Gemma 2 Model\n(gemma2:2b)"]
+        Gemma -->|"Structured JSON"| Parse["JSON Cleaner & Parser"]
+        
+        Parse --> Valid["Intent Validator & Bounds Clamper\n(validator.ts)"]
+        HP --> Valid
+        
+        Valid --> Intent["Typed UserIntent\n(duration, energy, budget, mood, social)"]
+        Intent --> Engine["Deterministic Activity Engine\n(engine.ts)"]
+        
+        Engine --> Lib[("Curated Activity Library")]
+        Engine --> Chal[("Sensory Challenges Library")]
+        
+        Engine --> Plan["Clock-Accurate Outdoor Plan"]
+        Plan --> UI["Plan View & Alternatives"]
+        
+        UI -->|"Conditions Change"| Modal["'Plans Changed?' Modal"]
+        Modal -->|"Recalibrate Intent"| Engine
+        
+        UI -->|"Start Outside Time"| ScreenExit["Screen Exit Mode\n('Go Outside')"]
+        ScreenExit --> Out["User Steps Outdoors 🌿"]
+        Out --> Reflection["Mindful Reflection Modal"]
+        Reflection --> Storage[("Local Storage Only\n(No Cloud Trackers)")]
+    end
 ```
 
----
-
-## Running Gemma Locally
-
-Outside connects out of the box to any local OpenAI-compatible inference server running Gemma.
-
-### Using Ollama:
-1. Install [Ollama](https://ollama.com/).
-2. Run Google Gemma in your terminal:
-   ```bash
-   ollama run gemma2:2b
-   ```
-   *(Or for higher precision: `ollama run gemma2:9b`)*
-3. That's it! Outside automatically connects to `http://localhost:11434/v1/chat/completions`.
-4. Open the **AI Engine & Privacy** modal (`Gemma / Heuristic Architecture` in the footer) and click **Test Connection** to verify live model responsiveness and roundtrip latency (e.g. `Connected (1253ms) — gemma2:2b verified`).
-
-### Local Heuristic Fallback (Zero Setup)
-If Gemma is not running or takes longer than the 30-second local threshold, **Outside does not crash or fake AI responses**. It automatically activates its internal deterministic heuristic parser and displays a truthful `Local Engine` badge with fallback diagnostics.
+### Architecture Highlights
+- **Ollama as the Local Runtime**: Ollama hosts and serves the open-weight model locally over an OpenAI-compatible HTTP endpoint (`/v1/chat/completions`).
+- **Gemma 2 as the Language Model**: Google Gemma (`gemma2:2b`) extracts typed parameters (`durationMinutes`, `energyLevel`, `mood`, `budget`, `activityPreference`, `socialPreference`, `locationPreference`).
+- **Hardware & Latency Resilience**: On consumer hardware, local inference latency varies from ~1.2s (warm, GPU offloaded) to ~10s (cold CPU execution). A 30s client timeout prevents premature request abortion.
+- **Strict Schema Validation**: `validator.ts` guarantees that model outputs adhere to schema bounds (clamping durations between 15 and 240 minutes, normalizing enums), preventing malformed model text from breaking the UI.
+- **Deterministic Scheduling Engine**: The physical schedule, milestone clock calculations, preparation tips, safety notes, and sensory challenges are generated by deterministic code in `engine.ts`. The AI never hallucinates physical itineraries.
 
 ---
 
-## Setup & Development
+## 🤝 HF26 Sponsors & Technology Acknowledgements
+
+Outside was built for the **DEV Hacktoberfest 2026 Week 1 Challenge: “Touch Grass.”** We gratefully acknowledge the following organizations and foundational technologies:
+
+| Organization | Official Website | Role in Outside & Technology Acknowledgement |
+| :--- | :--- | :--- |
+| **Ollama** | [https://ollama.com/](https://ollama.com/) | **Actively Used**: Powers the local language model runtime on `localhost:11434`, enabling completely private, on-device AI inference without cloud API dependencies. |
+| **Gemma by Google** | [https://ai.google.dev/gemma](https://ai.google.dev/gemma) | **Actively Used**: The open-weight model family (`gemma2:2b`) employed to interpret unstructured human requests into structured intent parameters. |
+| **Render** | [https://render.com/](https://render.com/) | **Deployment Configuration**: Cloud application platform. The repository includes a production-ready declarative [`render.yaml`](render.yaml) specification for static web service hosting. |
+| **ElevenLabs** | [https://elevenlabs.io/](https://elevenlabs.io/) | **Sponsor Acknowledgement**: Acknowledged for its industry-leading AI voice and audio technology. *(Note: Outside currently synthesizes acoustic chimes via the browser's native Web Audio API; ElevenLabs voice narration is highlighted on the project roadmap).* |
+
+*Disclaimer: Outside is an independent open-source submission for DEV Hacktoberfest 2026. Mention of sponsors does not imply direct corporate endorsement.*
+
+---
+
+## 🛠️ Technology Stack
+
+| Technology | Category | Role in Repository |
+| :--- | :--- | :--- |
+| **React 19** | Frontend Framework | Component architecture, state management, and declarative UI |
+| **TypeScript 5.7** | Language | Type safety across intent schemas, activity models, and tests |
+| **Vite 6** | Build Tool / Bundler | Rapid HMR dev server and local reverse proxy (`/api/ollama`) |
+| **Tailwind CSS 3.4** | Styling | Responsive layout, dark/light theme tokens, and typography |
+| **Google Gemma 2 (`gemma2:2b`)** | Open-Weight AI | Local natural-language intent extraction and classification |
+| **Ollama** | Model Runtime | Local inference server providing OpenAI-compatible completions |
+| **Lucide React** | Iconography | Accessible, lightweight interface icons |
+| **Web Audio API** | Audio Synthesis | Native 432 Hz harmonic singing bowl bell synthesizer (zero media assets) |
+| **Vitest 3** | Unit Testing | Fast unit and integration test runner for engine, parser, and storage |
+| **Puppeteer Core 25** | E2E Testing | Headless Chrome browser automation testing the full user journey |
+| **Render** | Hosting Platform | Static web hosting orchestrated via [`render.yaml`](render.yaml) |
+
+---
+
+## ⚡ Quick Start
 
 ### Prerequisites
-- Node.js 18+ (tested on Node v20 & v24)
-- npm or yarn
+- **Node.js**: Version 18+ (tested on Node v20 and v24)
+- **npm** or **yarn**
+- **Ollama** *(optional for local AI; heuristic engine operates with zero external tools)*: Download from [ollama.com](https://ollama.com/)
 
-### Installation
+### 3-Step Setup
+
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/tribhu05/outside.git
 cd outside
 
-# Install dependencies
+# 2. Install dependencies
 npm install
 
-# Start local development server
+# 3. Start local development server
 npm run dev
 ```
-Open `http://localhost:5173` in your browser.
 
-### Running Tests
-Outside includes both automated unit tests (Vitest) and full real-browser end-to-end tests (Puppeteer in Chrome):
+Open `http://localhost:5173/` in your browser. Outside is ready to use immediately!
+
+---
+
+## 🦙 Running Gemma Locally with Ollama
+
+To experience the full local open-weight AI capabilities of Outside:
+
+1. **Start Ollama:**
+   ```bash
+   ollama serve
+   ```
+2. **Pull the supported Gemma model:**
+   Outside is tuned and tested with Google Gemma 2 (2B):
+   ```bash
+   ollama pull gemma2:2b
+   ```
+   *(For systems with dedicated GPUs, `gemma2:9b` can also be used by setting the model name in the in-app AI settings).*
+3. **Verify the model is installed:**
+   ```bash
+   ollama list
+   ```
+   You should see `gemma2:2b` listed among your available models.
+4. **Verify in Outside:**
+   - Open Outside in your browser (`http://localhost:5173/`).
+   - Click **Gemma / Heuristic Architecture** in the footer.
+   - Click **Test Connection**.
+   - You will see live verification: `Connected (<latency>ms) — gemma2:2b verified`.
+
+---
+
+## 🧪 Testing & Verification
+
+The repository includes a comprehensive, multi-tiered automated testing suite:
 
 ```bash
-# Run unit & deterministic engine test suites (53/53 passing)
+# 1. Run unit and integration tests (Vitest)
 npm test
 
-# Run real Chrome browser end-to-end user journey tests (52/52 passing)
+# 2. Run real Chrome browser end-to-end tests (Puppeteer)
 npm run test:e2e
 
-# Run TypeScript typecheck
+# 3. Run TypeScript typechecking
 npm run lint
-```
 
-### Production Build
-```bash
+# 4. Compile production build
 npm run build
 ```
 
+### Verified Test Results (Commit `da2eab6`)
+
+| Test Suite | Command | Result | Coverage Details |
+| :--- | :--- | :--- | :--- |
+| **Unit & Integration** | `npm test` | **53 / 53 passed** | Intent validation, bounds clamping, heuristic parsing, AI health checks, timeout handling, markdown JSON cleaning, storage persistence, and plan engine. |
+| **Browser E2E** | `npm run test:e2e` | **52 / 52 passed** | Real Chrome automated journey: homepage load, quick prompts, 90m plan generation, challenge shuffle, alternative switches, **"Plans Changed?" 15m recalibration**, Screen Exit timer, sound synthesis, reflection save, and reload persistence. Zero uncaught console errors. |
+| **Type Checking** | `npm run lint` | **0 errors** | Strict TypeScript check (`tsc --noEmit`). |
+| **Production Build** | `npm run build` | **Clean build** | Production bundle generated via `tsc -b && vite build`. |
+
 ---
 
-## Configuration
+## 🚀 Deployment Guide
 
-You can configure the AI endpoint via environment variables or directly inside the in-app **AI Engine & Privacy** modal.
+Outside is designed as a **static single-page application** that executes entirely in the user's browser, communicating locally with the user's on-device Ollama instance.
 
-Copy `.env.example` to `.env`:
-```env
-VITE_GEMMA_API_URL=http://localhost:11434/v1/chat/completions
-VITE_GEMMA_MODEL=gemma2:2b
+### Deploying to Render (Configured)
+
+The repository includes a verified [`render.yaml`](render.yaml) configuration:
+
+```yaml
+services:
+  - type: web
+    name: outside
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: 20
 ```
 
----
+1. Connect your repository to [Render](https://render.com/).
+2. Select **New Blueprint Instance** pointing to `render.yaml` (or create a **Static Site** with build command `npm install && npm run build` and publish directory `./dist`).
+3. Deploy!
 
-## Screenshots
-
-| 1. Natural Language Input | 2. Structured Outdoor Plan |
-|---|---|
-| ![Input Screen](docs/screenshots/01-input.png) | ![Plan Screen](docs/screenshots/02-plan.png) |
-
-| 3. Minimal Screen Exit Mode | 4. Reflection & Log |
-|---|---|
-| ![Go Outside Mode](docs/screenshots/03-screen-exit.png) | ![Reflection Modal](docs/screenshots/04-reflection.png) |
+*Note on Cloud Deployments: When hosted on a remote domain (e.g. Render, Vercel), browser security prevents websites loaded over HTTPS from making unencrypted requests to non-CORS local endpoints. Outside's deterministic heuristic engine operates with 100% functionality on static cloud deployments, while local Gemma integration is designed for local development or setups configured with a secure tunnel/proxy.*
 
 ---
 
-## Documentation
+## 🗺️ Project Roadmap
 
-Detailed specifications are available in the [`/docs`](docs/) directory:
-- [`docs/architecture.md`](docs/architecture.md): Deep-dive into technical architecture and state flow.
-- [`docs/demo-script.md`](docs/demo-script.md): Step-by-step 2-minute walkthrough guide for evaluators.
-- [`docs/challenge-notes.md`](docs/challenge-notes.md): Official submission notes for DEV Hacktoberfest 2026.
+### Implemented & Verified in v1.0
+- [x] Natural language intent extraction using Google Gemma 2 (`gemma2:2b`).
+- [x] Zero-dependency deterministic heuristic fallback parser.
+- [x] Live AI health check and roundtrip latency diagnostics.
+- [x] Deterministic timeline generator with clock-based milestones.
+- [x] "Plans Changed?" dynamic mission recalibration (time, energy, rain/shelter, step-free, social).
+- [x] Sensory micro-challenges with shuffle and completion prompts.
+- [x] Minimalist Screen Exit Mode with countdown and phase navigation.
+- [x] Web Audio API synthesized singing bowl chimes.
+- [x] Post-outing mood reflection and 100% local `localStorage` history.
+- [x] Full test automation (53 Vitest unit tests + 52 Puppeteer browser tests).
+
+### Planned Future Improvements
+- [ ] **Voice-Narrated Departures**: Optional audio briefing integration (e.g., via ElevenLabs) during the initial 60 seconds of Screen Exit Mode.
+- [ ] **Local GPX / GeoJSON Route Overlays**: Optional offline topological maps for trail walkers without third-party GPS tracking.
+- [ ] **Printable Mission Cards**: One-click thermal-printer or index-card export for a 100% phone-free outdoor experience.
+- [ ] **Seasonal Phenology Calendars**: Local nature observation cues based on current calendar month (e.g., autumn leaf color shifts, spring bird migrations).
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 Contributions from the open-source community are warmly welcomed!
-1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature/mindful-challenge`).
-3. Commit your changes (`git commit -m 'Add new acoustic observation challenge'`).
-4. Ensure all tests pass (`npm test && npm run build`).
-5. Push to your branch and open a Pull Request.
+
+1. **Fork the repository** on GitHub.
+2. **Create a feature branch:**
+   ```bash
+   git checkout -b feature/mindful-sound-challenge
+   ```
+3. **Make your changes and ensure all tests pass:**
+   ```bash
+   npm run lint
+   npm test
+   npm run build
+   ```
+4. **Commit your changes:**
+   ```bash
+   git commit -m "feat: add acoustic canopy grounding challenge"
+   ```
+5. **Push to your branch and open a Pull Request.**
 
 ---
 
-## License
+## 📄 License
 
-Released under the [MIT License](LICENSE).
+This project is open-source and available under the terms of the [MIT License](LICENSE).  
+Copyright (c) 2026 Outside Contributors.
+
+---
+
+## 🔗 Project Links & Documentation
+
+- **Repository**: [https://github.com/tribhu05/outside](https://github.com/tribhu05/outside)
+- **Architecture Specification**: [`docs/architecture.md`](docs/architecture.md)
+- **Evaluator Demo Walkthrough**: [`docs/demo-script.md`](docs/demo-script.md)
+- **Challenge Track Notes**: [`docs/challenge-notes.md`](docs/challenge-notes.md)
+- **Issue Tracker**: [https://github.com/tribhu05/outside/issues](https://github.com/tribhu05/outside/issues)
