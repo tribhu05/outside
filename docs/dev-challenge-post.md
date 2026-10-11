@@ -36,13 +36,37 @@ Rather than an endless chat loop, Outside takes one freeform sentence, extracts 
 
 ## 📸 Visual Product Tour
 
-| **1. Natural-Language Intent** | **2. Structured Outdoor Plan** |
+### 1. From Natural Language to a Real-World Clock Plan
+
+| **1. Natural-Language Input** | **2. Structured Plan Intent** |
 | :---: | :---: |
-| ![Natural-Language Input](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/01-input.png) | ![Structured Outdoor Plan](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/02-plan.png) |
-| *Express constraints naturally without form friction* | *Clock-based timeline, items to bring, & sensory challenge* |
-| **3. Minimalist Screen Exit Mode** | **4. Local Wellbeing History** |
-| ![Screen Exit Mode](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/03-screen-exit.png) | ![Local History & Reflection](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/04-history.png) |
-| *High-contrast timer with 432 Hz singing bowl chime* | *100% on-device localStorage with mood shift tracking* |
+| ![Natural-Language Input](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/ss-01-input.png) | ![Plan Header with Intent Pills](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/ss-02-plan-header.png) |
+| *Type constraints freely: time, budget, and energy* | *Parsed intent pills: 30 min, Moderate Energy, Free, Solo* |
+| **3. Clock-Accurate Timeline** | **4. Minimalist Screen Exit Mode** |
+| ![Clock-Accurate Timeline](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/ss-03-plan-timeline.png) | ![Screen Exit Mode Countdown](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/ss-04-screen-exit.png) |
+| *Verified milestones calculated against current time* | *Ambient timer with 432 Hz singing bowl chime* |
+
+---
+
+### 2. Guided Outdoor Milestones (The Phone-Free Experience)
+
+Once you cross the threshold and step outside, Outside delivers calm, distraction-free milestone prompts:
+
+| **Phase 2: Outbound Stroll** | **Phase 3: Sensory Challenge** | **Phase 4: Return Leg** |
+| :---: | :---: | :---: |
+| ![Mindful Decompression Walk](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/ss-05-phase2.png) | ![Observation pause: Three Leaf Shapes](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/ss-06-phase3.png) | ![Easy stroll back](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/ss-07-phase4.png) |
+| *"Walk slowly enough that you could speak without losing breath"* | *"Observation pause: Locate 3 distinctly different leaf shapes"* | *"Notice how your mind feels now compared to when you left"* |
+
+---
+
+### 3. Mindful Return & 100% On-Device Wellbeing History
+
+When you step back inside, Outside welcomes you back, tracks your mood shift, and saves everything locally:
+
+| **Mindful Reflection Modal** | **On-Device Outside Log** |
+| :---: | :---: |
+| ![Welcome Back Reflection Modal](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/ss-08-reflection.png) | ![Outside Log](https://raw.githubusercontent.com/tribhu05/outside/master/docs/screenshots/ss-09-history-log.png) |
+| *Log how you feel (😊 Better) & check off outdoor challenge* | *100% on-device localStorage with 1-click JSON export* |
 
 ---
 
@@ -50,7 +74,7 @@ Rather than an endless chat loop, Outside takes one freeform sentence, extracts 
 
 ### 1. Freeform Natural-Language Planning
 Tell Outside your current real-world constraints in messy, human language:
-- *“I have 90 minutes free this evening. I don't want to spend money and I want something relaxing.”*
+- *“I have 30 minutes free after class.”*
 - *“I feel stressed after coding all day and want a 25-minute brisk walk.”*
 - *“Suggest a peaceful morning outing with a friend for ₹0.”*
 
@@ -59,20 +83,18 @@ Zero multi-turn chat traps. Outside extracts your constraints in a single turn a
 ### 2. Clock-Accurate Timeline & Packing Guidance
 Instead of vague advice like *"go for a walk sometime"*, Outside generates a deterministic, verified schedule mapped to your real-world clock:
 ```
-6:00 PM — Leave home & silence phone notifications
-6:05 PM — 25-minute relaxed outbound stroll toward the park
-6:30 PM — Sit somewhere peaceful (Bench observation)
-6:45 PM — Try the 5-senses observation challenge
-7:10 PM — Easy stroll home
-7:30 PM — Return refreshed
+7:12 PM — Leave home & silence screen (Place phone in pocket)
+7:15 PM — 15-minute Mindful Decompression Walk
+7:30 PM — Observation pause: Find Three Leaf Shapes
+7:35 PM — Easy stroll back
 ```
-It includes a personalized preparation checklist (water bottle, light jacket, flat shoes) and tailored safety reminders.
+It includes a personalized preparation checklist and tailored safety reminders.
 
 ### 3. Tactile "Challenge Me" Sensory Micro-Challenges
 To prevent mindlessly opening social feeds while walking, Outside incorporates tactile exercises designed to stimulate sensory grounding and break digital autopilot:
+- **Three Leaf Architectures**: Locate 3 distinctly shaped leaf patterns, shapes, or bark textures on your path without picking them.
 - **5-Senses Grounding**: Pause and notice 5 things you see, 4 textures you can touch, 3 sounds you hear, 2 outdoor scents, and 1 physical sensation.
 - **Canopy & Cloud Gaze**: Look straight up into the tree canopy or moving clouds for 2 uninterrupted minutes.
-- **Three Leaf Architectures**: Locate 3 distinctly shaped leaf structures along your route without picking them.
 - **Acoustic Horizon (No Headphones)**: Listen past near traffic to find the farthest ambient sound in nature.
 
 ### 4. Distraction-Free Screen Exit Mode ("GO OUTSIDE")
@@ -95,7 +117,7 @@ Real life doesn't always go according to plan. If weather turns, energy drops, o
 When you return, Outside welcomes you back:
 - Record your mood shift (😊 *Better*, 😌 *Relaxing*, ⚡ *Energizing*, 😐 *Okay*, 😴 *Still tired*).
 - Check off your sensory challenge and note what you observed.
-- Cumulative outdoor time tracking and mood reset rate (e.g. *92% of outings improved mood*).
+- Cumulative outdoor time tracking and mood reset rate (e.g. *100% of outings improved mood*).
 - **100% On-Device**: All session logs reside exclusively in browser `localStorage`. Includes 1-click JSON export and clear data options.
 
 ---
@@ -109,10 +131,10 @@ Outside is built with **React 19**, **TypeScript 5.7**, **Vite 6**, and **Tailwi
 ```mermaid
 flowchart TD
     subgraph Client["Client Browser (React 19 + TypeScript)"]
-        User["User Natural-Language Input\n('90 mins free, stressed, broke')"] --> Router{"AI Service Router\n(aiService.ts)"}
+        User["User Natural-Language Input\n('30 minutes free after class')"] --> Router{"AI Service Router\n(aiService.ts)"}
         
         Router -->|"Gemma Online"| GP["Gemma Provider\n(gemmaProvider.ts)"]
-        Router -->|"Ollama Offline / Timeout"| HP["Deterministic Heuristic Parser\n(heuristicProvider.ts)"]
+        Router -->|"Ollama Offline / Fallback"| HP["Deterministic Heuristic Parser\n(heuristicProvider.ts)"]
         
         GP -->|"Local HTTP POST"| Ollama["Local Ollama Runtime\n(localhost:11434)"]
         Ollama --> Gemma["Google Gemma 2\n(gemma2:2b)"]
@@ -183,24 +205,24 @@ export function buildOutdoorPlan(intent: UserIntent, now = new Date()): OutdoorP
   milestones.push({
     id: 'depart',
     time: formatClockTime(now, elapsed),
-    durationMinutes: 5,
-    title: 'Departure & Silence Screens',
-    description: 'Step outside your door. Put your phone on silent and in your pocket.',
+    durationMinutes: 3,
+    title: 'Leave home & silence screen',
+    description: 'Slip into comfortable shoes, mute notifications, and step outside the door.',
     type: 'prep'
   });
-  elapsed += 5;
+  elapsed += 3;
   
   // Phase 2: Outbound Stroll
-  const travelMinutes = Math.max(10, Math.round((intent.durationMinutes - 20) * 0.35));
+  const travelMinutes = Math.max(10, Math.round((intent.durationMinutes - 15) * 0.5));
   milestones.push({
     id: 'outbound',
     time: formatClockTime(now, elapsed),
     durationMinutes: travelMinutes,
-    title: `Outbound Walk to ${primary.title}`,
-    description: `Walk at a comfortable, unhurried pace toward your outdoor destination.`,
+    title: `Mindful Decompression Walk`,
+    description: `Walk at a deliberate, gentle pace and let your eyes wander naturally.`,
     type: 'travel'
   });
-  // ... anchor activity, sensory observation pause, and return leg
+  // ... anchor activity, sensory observation pause, and return stroll
 }
 ```
 
@@ -251,7 +273,7 @@ npm run lint    # 0 TypeScript type errors
 | Test Suite | Tests | What Is Verified |
 | :--- | :---: | :--- |
 | **Unit & Integration** | **53 / 53** | Intent boundary validation, regex duration extraction, AI health checks, latency calculation, Markdown JSON cleaning, fallback switching, and activity ranking. |
-| **Browser E2E (Puppeteer)** | **52 / 52** | Real Chrome journey: homepage load, 90m plan generation, challenge shuffle, "Plans Changed?" 15m dynamic recalibration, Screen Exit Mode timer countdown, audio chime execution, reflection save, and localStorage persistence. |
+| **Browser E2E (Puppeteer)** | **52 / 52** | Real Chrome journey: homepage load, 30m plan generation, challenge shuffle, "Plans Changed?" dynamic recalibration, Screen Exit Mode timer countdown, audio chime execution, reflection save, and localStorage persistence. |
 
 ---
 
@@ -292,7 +314,7 @@ Instead, I opened **Outside** and entered:
 
 Within two seconds, Outside generated a focused mission:
 - **Timeline**: 6:17 PM departure ➔ 6:22 PM quiet outbound walk to the neighborhood tree line ➔ 6:30 PM bench pause ➔ 6:37 PM return.
-- **Sensory Challenge**: *5-Senses Grounding* (notice 5 textures, 3 outdoor sounds, and moving dusk clouds).
+- **Sensory Challenge**: *Three Leaf Shapes* (find 3 distinctly shaped leaf patterns or bark textures).
 - **Items to Bring**: A light jacket and keys. Leave headphones behind.
 
 I clicked **“Start Outside Time 🌿”**. The UI cleared into a peaceful countdown. The 432 Hz singing bowl chime resonated, and I slipped my phone into my jacket pocket.
